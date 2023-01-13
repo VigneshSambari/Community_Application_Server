@@ -1,0 +1,4 @@
+{
+    "DBURL":"mongodb+srv://Community_App:Project1234@communitycluster.qv301ue.mongodb.net/?retryWrites=true&w=majority",
+    "JwtKey":"IjoiNjM4ZjE1ZTZiOWNhYjkzNGJkNzUyNGQxIn0sImlhdCI"
+}
