@@ -1,7 +1,12 @@
-const express=require("express");
+const express = require("express");
+const app = express();
 
-const app=express();
+const PORT = 5000 || process.env.PORT;
 
-const Port=process.env.PORT||2000
+app.get("/", (req, res) => {
+  res.send("hoila");
+});
 
-app.listen(Port,"0.0.0.0",()=>console.log("App is running"));
+const Port=process.env.PORT||2000;
+
+app.listen(Port,"0.0.0.0",()=>console.log("Running"));
