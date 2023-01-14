@@ -60,7 +60,7 @@ const generateToken = ({email, id}) =>{
 
 
 //SignUp Controller -> Google Auth and Signin by Email
-const signupController = async(req, res) => {
+const signupController = async (req, res) => {
     if (req.body.googleAccessToken) {
         const {googleAccessToken} = req.body;
 
@@ -99,11 +99,11 @@ const signupController = async(req, res) => {
 
     } else {
         // normal form signup
-        const {email, password, confirmPassword, firstName, lastName} = req.body;
+        const {email, password, confirmPassword, name} = req.body;
 
         try {
-            if (email === "" || password === "" || firstName === "" || lastName === "" && password === confirmPassword && password.length >= 4) 
-                return res.status(400).json({message: "Invalid field!"})
+            // if (email === "" || password === "" || firstName === "" || lastName === "" && password === confirmPassword && password.length >= 4) 
+            //     return res.status(400).json({message: "Invalid field!"})
 
             const existingUser = await User.findOne({email})
 
@@ -113,8 +113,7 @@ const signupController = async(req, res) => {
            
             const hashedPassword = await generateEncryptedPassword(password);
 
-            //const result = await User.create({email, password: hashedPassword, firstName, lastName})
-
+            const result = await User.create({email, password: hashedPassword, name:name})
             const token = generateToken({email: result.email, id: result._id})
 
             console.log("Inside signup email and password ");

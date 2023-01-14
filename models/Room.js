@@ -1,23 +1,44 @@
-const mongoose=require("mongoose");
+const mongoose = require("mongoose");
 
-const RoomSchema = new mongoose.Schema({
+const RoomSchema = new mongoose.Schema(
+  {
+    // privatee , name, desc, admin[] , users[],msgs[],created at,created by ,link, tags[]
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
-    typeOfRoom: {
-        type: String,
-        required: true,
+    private: {
+      type: Boolean,
+      required: true,
     },
     description: {
-        type: String,
-
+      type: String,
     },
-    admin: [Number],
+    admins: {
+      type: Array,
+      required: true,
+    },
+    users: {
+      type: Array,
+      required: true,
+    },
+    messages: {
+      type: Array,
+      required: true,
+    },
     createdBy: {
-        type: String,
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
     },
-    usersIdPreset: [Number],
+    tags: {
+      type: Array,
+    },
+    link: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
 
-});
+module.exports = Room = mongoose.model("Room", RoomSchema);
+
