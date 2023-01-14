@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 const userVerificationSchema = mongoose.Schema({
-    userId: {
+    email: {
         type: String
     },
     uniqueString: {

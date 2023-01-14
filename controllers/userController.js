@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const config = require("config");
+const path = require("path");
 
 //email handler
 const nodemailer = require("nodemailer");
@@ -21,14 +22,14 @@ const UserVerification = require("../models/UserVerification");
 //nodemailer transporter
 let transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-        user: "communityapplication45@gmail.com",
-        pass: "pnzxibhzokrthuli",
-    }
-})
+        port: 587,
+        secure: false,
+        requireTLS: true,
+        auth: {
+            user: config.get("AdminEmail"),
+            pass: config.get("AdminPassword"),
+        }    
+});
 
 
 //testing 
@@ -56,6 +57,95 @@ const generateToken = ({email, id}) =>{
         email,
         id
     }, config.get("JwtKey"))
+}
+
+
+//send verification mail
+const sendVerificationMail = async (email, res) =>{
+
+    //Currently local host url but is actual url when hosted
+    const currentUrl= config.get("CurrentURL");
+
+    const uniqueString = uuidv4() + email;
+
+    const mailOptions = {
+        from: config.get("AdminEmail"),
+        to: email,
+        subject: "Verify your Email to join community application",
+        html: `<p>Verify your email address to complete signup and login into your account.</p><p>This link
+         <b>expires in 6 hours</b>.</p><p>Press <a href=${currentUrl + "user/verify/" + email + "/" + uniqueString}> 
+         here </a> to proceed. </p>`
+    };
+
+    try{
+        const saltRounds =10;
+        const hashedUniqueString = await bcrypt.hash(uniqueString, saltRounds);
+        const newVerification = new UserVerification({
+            email,
+            uniqueString: hashedUniqueString,
+            createdAt: Date.now(),
+            expiresAt: Date.now() + 21600000,
+        });
+        await newVerification.save();
+    }
+    catch(err){
+        console.log(err);
+    }
+
+    try{
+        await transporter.sendMail(mailOptions);
+        res.json({
+            status: "PENDING",
+            message: "Verification email sent..."
+        })
+    }
+    catch(err){
+        console.log(err);
+        res.json({
+            status: "FAILED",
+            message: "Email verification failed",
+        });
+    }
+     
+}
+
+
+const emailVerificationController = async (req,res) => {
+    let { email, uniqueString} = req.params;
+
+    try{
+        const result = UserVerification.find({email})
+        if(result.length > 0){
+            //User verification record exists so we proceed
+
+            const {expiresAt} = result[0];
+
+            //check if link expired
+            if(expiresAt < Date.now()){
+                try{
+                    await UserVerification.deleteOne({email});
+                }
+                catch(err){
+                    let message = "An error occured while clearing user verification record";
+                    res.redirect(`/verified/error=true&message=${message}`)
+                }
+            }
+        }
+        else{
+            //User verification record doesnot exist
+            let message = "Account record doesn't exist or has already been verified. Please sign up or log in.";
+            res.redirect(`/verified/error=true&message=${message}`)
+        }
+    }
+    catch(err){
+        console.log(err);
+        let message = "An error occured while checking for existing user verification record";
+        res.redirect(`/verified/error=true&message=${message}`)
+    }
+}
+
+const verifiedEmailController = async (req,res) =>{
+    res.sendFile(path.join(__dirname,"../views/verified.html"));
 }
 
 
@@ -245,5 +335,7 @@ const changePasswordController = async (req,res) => {
 module.exports = {
     signinController,
     signupController,
-    changePasswordController
+    changePasswordController,
+    sendVerificationMail,
+    verifiedEmailController
 }
