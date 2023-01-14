@@ -3,11 +3,10 @@ const connectDB = require("./database/db");
 const app = express();
 
 const PORT = 5000 || process.env.PORT;
-
 connectDB();
 
 app.get("/", (req, res) => {
   res.send("hoila");
 });
 
-app.listen(PORT, () => console.log("Running"));
+app.listen(PORT, () => console.log("App is Up and Running ..."));
