@@ -12,7 +12,9 @@ const  getAllBlogsController = async (req, res) => {
     }
     catch(err){
         //console.log("Error in fetching all blogs");
-        return res.json(err);
+        return res.json({
+            "message": "Internal server error in fetching all blogs!"
+        });
     }
 }
 
@@ -29,12 +31,14 @@ const getOwnBlogsController = async (req, res) => {
     }
     catch(err){
         //console.log("Error in fetchin user own blogs");
-        return res.json(err);
+        return res.json({
+            "message": "Internal Server error in fetching own user blogs"
+        });
     }
 }
 
 
-const createBlogController = async (req, res, next) => {
+const createBlogController = async (req,res) => {
     
     try{
         const {
@@ -58,14 +62,15 @@ const createBlogController = async (req, res, next) => {
         }
         const blogPost = new BlogPost(newBlog);
         await blogPost.save();
-        req.body = blogPost;
-
-        next();
+        //console.log("Succesfully created blogpost");
+        return res.json(blogPost);
     }
     catch(err){
         //console.log("Error in saving blogpost");
         //console.log(err);
-        return res.json(err);
+        return res.json({
+                "message" :" Internal server error in creating blog post!",
+            });
     }
 }
 
@@ -81,7 +86,9 @@ const deleteBlogController = async (req,res) => {
     catch(err){
         //console.log('Error in deleting blog');
         //console.log(err);
-        return res.json(err);
+        return res.json({
+            "message": "Internal server error in deleting blog!"
+        });
         
     }
 }
@@ -117,7 +124,9 @@ const updateBlogController  = async (req, res) => {
     }
     catch(err){
         //console.log("Error in updating blog!");
-        return res.json(err)
+        return res.json({
+            "message": "Internal server error in updating blog"
+        })
     }
 }
 
@@ -252,14 +261,14 @@ const likeOrUnlikeController = async (req, res) => {
         else if (choice === "dislike"){
             if(comment.likes === 0){
                 return res.json({
-                    "_message": "Cannot unlike as likes are 0!"
+                    "message": "Cannot unlike as likes are 0!"
                 })
             }
             comment.likes = comment.likes - 1;
         }
         else{
             return res.json({
-                "_message": "Invalid get request!"
+                "message": "Invalid get request!"
             });
         }
 

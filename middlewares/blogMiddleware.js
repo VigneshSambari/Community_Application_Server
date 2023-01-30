@@ -1,55 +1,33 @@
 const cloudinary = require ('cloudinary').v2;
 const { Console } = require('console');
 const fs = require('fs');
-const BlogPost = require('../models/BlogPost');
 
-const uploadBlogMedia = async (req, res) => {
-
+const uploadBlogMedia = async (req, res, next) => {
     console.log("inside uploadBlogMedia middleware");
-    const {postedBy} = req.body;
-    const blogId = req.body._id;
-    console.log(req.body)
-    const files = req.files;
-    var fileItr = 0;
     try{
-              
+        const {postedBy} = req.body;
+        
+        const files = req.files;
+
         if(files.length == 0){
             next();
         }
-        
-        for(fileItr=0; fileItr<files.length; fileItr++){
-            const {path} = files[fileItr];
+
+        req.body.coverMedia = [];
+        for(const file of files){
+            const {path} = file;
             const uploadedFileDetails = await cloudinary.uploader.upload(path,
                 {
                     resource_type: "auto",
                     folder: `communityapplication/${postedBy}`,
                 }
             );
-
-            console.log(req.body.coverMedia[fileItr]._id)
-                
-            const currFileDetails = await BlogPost.findByIdAndUpdate({_id: blogId, "coverMedia._id": req.body.coverMedia[fileItr]._id}, 
-            {
-                '$set': {
-                    // "coverMedia.$.type": req.body.coverMedia[fileItr].type,
-                    // "coverMedia.$.url": uploadedFileDetails.secure_url,
-                    // "coverMedia.$.publicId": uploadedFileDetails.public_id
-                    // "coverMedia":{
-                    //     _id:  req.body.coverMedia[fileItr]._id,
-                    //     type: req.body.coverMedia[fileItr].type,
-                    //     url: uploadedFileDetails.secure_url,
-                    //     publicId: uploadedFileDetails.public_id
-                    // }
-                }
-                
-            })
-
-            console.log(currFileDetails);  
-            req.body.coverMedia[fileItr].url= uploadedFileDetails.secure_url;
-            req.body.coverMedia[fileItr].publicId= uploadedFileDetails.public_id; 
-
+            req.body.coverMedia.push({
+                url: uploadedFileDetails.secure_url,
+                publicId: uploadedFileDetails.public_id
+            });
             fs.unlinkSync(path);
-       }
+        }
 
         console.log("Uploaded all images")
         // const result = await cloudinary.uploader.upload(req.file.path,
@@ -60,19 +38,12 @@ const uploadBlogMedia = async (req, res) => {
         // req.body.coverMedia.link  = result.secure_url;
         // req.body.coverMedia.publicId = result.public_id;
 
-        return res.json({
-            "_message": "Succesfully uploaded all blog images"
-        });
+        next();
     }
     catch(err){
         console.log("Error in uploading media blog middleware");
         console.log(err);
-
-        for(; fileItr>=0; fileItr--){
-
-        }
-
-        return res.json(err)
+        res.json(err)
     }
  
           
