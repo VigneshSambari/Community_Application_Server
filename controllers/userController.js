@@ -52,14 +52,22 @@ const generateEncryptedPassword = async (password)=>{
 
 
 //Generate token from email and id
+<<<<<<< HEAD
 const generateToken = ({id}) =>{
     return jwt.sign({
         id,
+=======
+const generateToken = ({email, id}) =>{
+    return jwt.sign({
+        email,
+        id
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
     }, config.get("JwtKey"))
 }
 
 
 //send verification mail
+<<<<<<< HEAD
 const sendVerificationMail = async (req, res) => {
     
     //Currently local host url but is actual url when hosted
@@ -99,6 +107,11 @@ const sendVerificationMail = async (req, res) => {
         }   
     }
 
+=======
+const sendVerificationMail = async (email, res) =>{
+
+    //Currently local host url but is actual url when hosted
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
     const currentUrl= config.get("CurrentURL");
 
     const uniqueString = uuidv4() + email;
@@ -108,12 +121,20 @@ const sendVerificationMail = async (req, res) => {
         to: email,
         subject: "Verify your Email to join community application",
         html: `<p>Verify your email address to complete signup and login into your account.</p><p>This link
+<<<<<<< HEAD
          <b>expires in 6 hours</b>.</p><p>Press <a href=${currentUrl + "auth/verifyemail/" + email + "/" + uniqueString}> 
+=======
+         <b>expires in 6 hours</b>.</p><p>Press <a href=${currentUrl + "user/verify/" + email + "/" + uniqueString}> 
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
          here </a> to proceed. </p>`
     };
 
     try{
+<<<<<<< HEAD
         const saltRounds = 10;
+=======
+        const saltRounds =10;
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
         const hashedUniqueString = await bcrypt.hash(uniqueString, saltRounds);
         const newVerification = new UserVerification({
             email,
@@ -145,6 +166,7 @@ const sendVerificationMail = async (req, res) => {
 }
 
 
+<<<<<<< HEAD
 //Controller to verify mail 
 const emailVerificationController = async (req,res) => {
     let { email, uniqueString } = req.params
@@ -192,30 +214,64 @@ const emailVerificationController = async (req,res) => {
                 catch(err){
                     let message = "An error occured while comparing unique string";
                     res.redirect(`/auth/verified/error=true&message=${message}`)
+=======
+const emailVerificationController = async (req,res) => {
+    let { email, uniqueString} = req.params;
+
+    try{
+        const result = UserVerification.find({email})
+        if(result.length > 0){
+            //User verification record exists so we proceed
+
+            const {expiresAt} = result[0];
+
+            //check if link expired
+            if(expiresAt < Date.now()){
+                try{
+                    await UserVerification.deleteOne({email});
+                }
+                catch(err){
+                    let message = "An error occured while clearing user verification record";
+                    res.redirect(`/verified/error=true&message=${message}`)
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
                 }
             }
         }
         else{
             //User verification record doesnot exist
             let message = "Account record doesn't exist or has already been verified. Please sign up or log in.";
+<<<<<<< HEAD
             res.redirect(`/auth/verified/error=true&message=${message}`)
+=======
+            res.redirect(`/verified/error=true&message=${message}`)
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
         }
     }
     catch(err){
         console.log(err);
         let message = "An error occured while checking for existing user verification record";
+<<<<<<< HEAD
         res.redirect(`/auth/verified/error=true&message=${message}`)
     }
 }
 
 
 //Controller to show html after verification
+=======
+        res.redirect(`/verified/error=true&message=${message}`)
+    }
+}
+
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
 const verifiedEmailController = async (req,res) =>{
     res.sendFile(path.join(__dirname,"../views/verified.html"));
 }
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
 //SignUp Controller -> Google Auth and Signin by Email
 const signupController = async (req, res) => {
     if (req.body.googleAccessToken) {
@@ -240,7 +296,11 @@ const signupController = async (req, res) => {
 
                 const result = await User.create({verified:"true",email, firstName, lastName, profilePicture: picture})
 
+<<<<<<< HEAD
                 const token = generateToken({id:result._id})
+=======
+                const token = generateToken({email: result.email,  id:result._id})
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
 
                 console.log("Inside signup google auth");
                 console.log(token);
@@ -271,7 +331,11 @@ const signupController = async (req, res) => {
             const hashedPassword = await generateEncryptedPassword(password);
 
             const result = await User.create({email, password: hashedPassword, name:name})
+<<<<<<< HEAD
             const token = generateToken({id: result._id})
+=======
+            const token = generateToken({email: result.email, id: result._id})
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
 
             console.log("Inside signup email and password ");
             console.log(token);
@@ -290,7 +354,11 @@ const signupController = async (req, res) => {
 
 
 //SignIn controller using Google Auth and email
+<<<<<<< HEAD
 const signinController = async (req, res) => {
+=======
+const signinController = async(req, res) => {
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
     if(req.body.googleAccessToken){
 
         const {googleAccessToken} = req.body;
@@ -312,7 +380,11 @@ const signinController = async (req, res) => {
                 if (!existingUser) 
                 return res.status(404).json({message: "User don't exist!"})
 
+<<<<<<< HEAD
                 const token = generateToken({id: existingUser._id})
+=======
+                const token = generateToken({email: existingUser.email, id: existingUser._id})
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
                 
                 console.log("Inside signin google auth ");
                 console.log(token);
@@ -343,7 +415,11 @@ const signinController = async (req, res) => {
             if (!isPasswordOk) 
                 return res.status(400).json({message: "Invalid credintials!"})
     
+<<<<<<< HEAD
             const token = generateToken({id: existingUser._id})
+=======
+            const token = generateToken({email: existingUser.email, id: existingUser._id})
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
             
             console.log("Inside signin email and password ");
             console.log(token);
@@ -404,6 +480,10 @@ module.exports = {
     signupController,
     changePasswordController,
     sendVerificationMail,
+<<<<<<< HEAD
     verifiedEmailController,
     emailVerificationController
+=======
+    verifiedEmailController
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
 }

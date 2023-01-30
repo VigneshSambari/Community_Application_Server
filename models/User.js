@@ -15,6 +15,16 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+<<<<<<< HEAD
+=======
+    avatar: {
+      type: String,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
+>>>>>>> 8d5bfd096c55756115e3a4acea7425c3eec7df21
   },
   { timestamps: true }
 );
