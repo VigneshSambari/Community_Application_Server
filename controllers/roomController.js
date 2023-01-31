@@ -1,10 +1,9 @@
-// const { rmSync } = require("fs");
+const {v4: uuidv4} = require("uuid");
 const Profile = require("../models/Profile");
 const Room = require("../models/Room");
-const User = require("../models/User");
 
 // Get all rooms (public) (Get)
-const GetRooms = async (req, res) => {
+const getRoomsController = async (req, res) => {
   try {
     const allRooms = await Room.find();
     console.log("success fetching rooms");
@@ -15,32 +14,34 @@ const GetRooms = async (req, res) => {
   }
 };
 
+
 // Create a room (Private) (Post)
-const PostRooms = async (req, res) => {
+const createRoomController = async (req, res) => {
   try {
     const {
       name,
+      type,
       description,
-      users,
-      admins,
-      messages,
       createdBy,
       tags,
-      private,
     } = req.body;
+
+    const admins = [{_id: createdBy}];
 
     const curRoom = {
       name,
+      type,
       description,
-      users,
       admins,
-      messages,
       createdBy,
       tags,
-      private,
     };
-    const tempRoom = new Room(curRoom);
+    
+
+    var tempRoom = new Room(curRoom);
     await tempRoom.save();
+    console.log(tempRoom);
+
     console.log("success aading rooms");
     return res.json(tempRoom);
   } catch (err) {
@@ -49,30 +50,73 @@ const PostRooms = async (req, res) => {
   }
 };
 
+
 // Join a room (Private) (post)
-const JoinRoom = async (req, res) => {
+const joinOrLeaveRoomController = async (req, res) => {
+  const {userId, roomId, joinOrLeave} = req.body;
   try {
-    const userId = req.user;
-    const roomId = req.params.id;
+    console.log(userId)
+    const userAdded = joinOrLeave === "join" ? 
+    await Room.findByIdAndUpdate(
+      {_id: roomId}, 
+      {
+        $addToSet: {
+          users: {
+            _id: userId,
+          }
+        }
+      }
+    ) : 
+    await Room.findByIdAndUpdate(
+      {_id: roomId}, 
+      {
+        $pull: {
+          users: {
+            _id: userId,
+          }
+        }
+      }
+    )
 
-    const curRoom = await Room.findById(roomId);
-    curRoom.users.append(userId);
-    await curRoom.save();
-
-    const curProfile = await Profile.find({ user: userId });
-    curProfile.rooms.append(roomId);
-    await curProfile.save();
-
-    console.log("success joining rooms");
-    return res.json(curRoom);
+    console.log("success joining/leaving rooms");
+    return res.json({
+      "message": "Successfully joined/left room"
+    });
   } catch (err) {
     res.send("internal server Error in joining rooms").status(500);
     console.log(err);
   }
 };
 
+const joinViaLinkController = async (req, res) => {
+  const {roomId} = req.params;
+  try {
+    console.log(userId)
+    const userAdded = await Room.findByIdAndUpdate(
+      {_id: roomId}, 
+      {
+        $addToSet: {
+          users: {
+            _id: req.user,
+          }
+        }
+      }
+    );
+    console.log(userAdded)
+    console.log("success joining/leaving rooms");
+    return res.json({
+      "message": "Successfully joined/left room"
+    });
+  } catch (err) {
+    res.send("internal server Error in joining rooms").status(500);
+    console.log(err);
+  }
+}
+
+
 module.exports = {
-  GetRooms,
-  PostRooms,
-  JoinRoom,
+  getRoomsController,
+  createRoomController,
+  joinOrLeaveRoomController,
+  joinViaLinkController
 };

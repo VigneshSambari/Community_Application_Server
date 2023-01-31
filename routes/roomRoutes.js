@@ -1,13 +1,22 @@
 const express = require("express");
 const {
-  GetRooms,
-  PostRooms,
-  JoinRoom,
+  getRoomsController,
+  createRoomController,
+  joinOrLeaveRoomController,
+  joinViaLinkController
 } = require("../controllers/roomController");
+
+const {authMiddleware} = require("../middlewares/auth");
+
+const {roomMiddleware} = require("../middlewares/room");
+
 const router = express.Router();
 
-router.post("", PostRooms);
-router.post("/:id", JoinRoom);
-router.get("", GetRooms);
+router.get("", getRoomsController);
+router.get("/joinViaLink/:roomId", authMiddleware, joinViaLinkController);
+router.post("/create", createRoomController);
+router.post("/join", roomMiddleware, joinOrLeaveRoomController);
+router.post("/leave", joinOrLeaveRoomController);
+
 
 module.exports = router;

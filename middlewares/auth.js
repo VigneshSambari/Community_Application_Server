@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 const JwtKey = config.get("JwtKey");
 
-const auth = async (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.headers["x-auth-token"];
 
   if (!token) {
@@ -22,4 +22,4 @@ const auth = async (req, res, next) => {
   }
 };
 
-module.exports = auth;
+module.exports = {authMiddleware};

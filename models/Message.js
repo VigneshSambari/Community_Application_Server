@@ -11,6 +11,14 @@ const MessageSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    replies: [
+      {
+        reply: {
+          type: String,
+          default: "", 
+        },
+      }
+    ],
     sendBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -19,12 +27,11 @@ const MessageSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Room",
     },
-    date: {
+    createdAt: {
       type: Date,
-      default: Date.now(),
-    },
+      required: true,
+    }
   },
-  { timestamps: true }
 );
 
 module.exports = Message = mongoose.model("Message", MessageSchema);

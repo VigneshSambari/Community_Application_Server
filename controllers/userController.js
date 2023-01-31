@@ -45,7 +45,7 @@ let transporter = nodemailer.createTransport({
 });
 
 //Generate encryped password
-const generateEncryptedPassword = async (password)=>{
+const generateEncryptedPassword = async (password) => {
     let salt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, salt);
 }

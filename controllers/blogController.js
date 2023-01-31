@@ -151,7 +151,7 @@ const addBlogCommentController = async (req, res) => {
         const addedComment = await BlogPost.findByIdAndUpdate(
             commentedOn,
             {
-                $push: {
+                $addToSet: {
                     'comments': {
                         _id: newComment._id
                     },

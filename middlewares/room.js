@@ -1,18 +1,33 @@
 const Room = require("../models/Room");
 
-const room = async (req, res, next) => {
+const roomMiddleware = async (req, res, next) => {
   try {
-    const roomId = req.params.id;
-    const curRoom = await Room.findById(roomId);
+    const {roomId, userId} = req.body;
+    const currRoom = await Room.findById(roomId);
 
-    if (!curRoom.private) {
+    if (currRoom.type == "public") { 
       next();
+    }
+    else if(currRoom.type == "private"){
+      const requestSent = await Room.findByIdAndUpdate({_id: roomId}, 
+        {
+          $addToSet: {
+            requests: {
+              _id: userId,
+            }
+          }
+        }
+      ) 
+      return res.json({
+        "message": "Join request sent!", 
+      })
     }
     //  private room logic
   } catch (err) {
-    console.log("err in room middleware ");
-    return res.status(401).json({ msg: "No access to this room " });
+    return res.json(err);
   }
 };
 
-module.exports = room;
+module.exports = {
+  roomMiddleware
+}; 

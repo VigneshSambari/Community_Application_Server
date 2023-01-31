@@ -7,35 +7,66 @@ const RoomSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    private: {
-      type: Boolean,
+    groupIcon: {
+      type: String,
+      default: "",
+    },
+    type: {
+      type: String,
       required: true,
     },
     description: {
       type: String,
+      default: "",
     },
-    admins: {
-      type: Array,
-      required: true,
-    },
-    users: {
-      type: Array,
-      required: true,
-    },
-    messages: {
-      type: Array,
-      required: true,
-    },
+    admins: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+      }
+    ],
+    users: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        }
+      }
+    ],
+    requests: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        }
+      }
+    ],
+    messages: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Message",
+          required: true,
+        }
+      }
+    ],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
-    tags: {
-      type: Array,
-    },
-    link: {
-      type: String,
-    },
+    tags: [
+      {
+        tag: {
+          type: String,
+        }
+      }
+
+    ],
   },
   { timestamps: true }
 );
