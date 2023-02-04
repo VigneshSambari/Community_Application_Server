@@ -13,5 +13,5 @@ const CollegeSchema = new mongoose.Schema(
             } 
         ]
     }
-)
+);
 module.exports = College = mongoose.Schema("College", CollegeSchema);
