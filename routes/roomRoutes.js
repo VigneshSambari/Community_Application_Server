@@ -6,9 +6,9 @@ const {
   joinViaLinkController
 } = require("../controllers/roomController")
 
-const {authMiddleware} = require("../middlewares/auth");
+const {authMiddleware} = require("../middlewares/authMiddleware");
 
-const {roomMiddleware} = require("../middlewares/room");
+const {roomMiddleware} = require("../middlewares/roomMiddleware");
 
 const router = express.Router();
 

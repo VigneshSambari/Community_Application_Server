@@ -1,6 +1,6 @@
 const {v4: uuidv4} = require("uuid");
-const Profile = require("../models/Profile");
-const Room = require("../models/Room");
+const Profile = require("../models/Profile.model");
+const Room = require("../models/Room.model");
 
 // Get all rooms (public) (Get)
 const getRoomsController = async (req, res) => {
