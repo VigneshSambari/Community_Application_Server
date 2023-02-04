@@ -4,7 +4,7 @@ const {
   createRoomController,
   joinOrLeaveRoomController,
   joinViaLinkController
-} = require("../controllers/roomController");
+} = require("../controllers/roomController")
 
 const {authMiddleware} = require("../middlewares/auth");
 

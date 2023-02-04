@@ -12,21 +12,40 @@ const ProfileSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    rooms: {
-      type: Array,
-    },
+    rooms: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Room",
+        },
+        fetchAfter: {
+          type: Date,
+        }
+      }
+    ],
     college: {
       type: String,
+      default: "",
     },
-    branch: {
+    specialization: {
       type: String,
+      default: "",
     },
-    professor: {
-      type: Boolean,
+    designation: {
+      type: String,
+      required: true,
     },
-    avatar:{
+    avatar: {
       type: String,
       default: ""
+    },
+    online: {
+      type: Boolean,
+      default: false,
+    },
+    lastseen: {
+      type: Date,
+      default: Date.now(),
     }
   },
   { timestamps: true }

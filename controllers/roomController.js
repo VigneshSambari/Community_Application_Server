@@ -51,12 +51,9 @@ const createRoomController = async (req, res) => {
 };
 
 
-// Join a room (Private) (post)
-const joinOrLeaveRoomController = async (req, res) => {
-  const {userId, roomId, joinOrLeave} = req.body;
-  try {
-    console.log(userId)
-    const userAdded = joinOrLeave === "join" ? 
+//function to add user to group
+const findAndAdd = async ({userId, roomId, roomCreatedAt}) => {
+  try{
     await Room.findByIdAndUpdate(
       {_id: roomId}, 
       {
@@ -66,7 +63,30 @@ const joinOrLeaveRoomController = async (req, res) => {
           }
         }
       }
-    ) : 
+    );
+
+    await Profile.findByIdAndUpdate(
+      {user: userId},
+      {
+        $addToSet: {
+          rooms: {
+            _id: roomId,
+            fetchAfter: roomCreatedAt
+          }
+        }
+      }
+    )
+  }
+  catch(err){
+    console.log(err);
+    throw err;
+  }
+}
+
+
+//function to remove user from group
+const findAndRemove = async ({userId, roomId}) => {
+  try{
     await Room.findByIdAndUpdate(
       {_id: roomId}, 
       {
@@ -76,7 +96,35 @@ const joinOrLeaveRoomController = async (req, res) => {
           }
         }
       }
+    );
+
+    await Profile.findByIdAndUpdate(
+      {user: userId},
+      {
+        $pull: {
+           rooms: {
+            _id: roomId,
+           }
+        }
+      }
     )
+  }
+  catch(err){
+    console.log(err);
+    throw err;
+  }
+}
+
+
+// Join a room (Private) (post)
+const joinOrLeaveRoomController = async (req, res) => {
+  const {userId, roomId, joinOrLeave, roomCreatedAt} = req.body;
+  try {
+    console.log(userId)
+    const userAdded = joinOrLeave === "join" 
+    ? await findAndAdd({userId, roomId, roomCreatedAt})
+    : await findAndRemove({userId, roomId}); 
+    
 
     console.log("success joining/leaving rooms");
     return res.json({
@@ -91,15 +139,22 @@ const joinOrLeaveRoomController = async (req, res) => {
 const joinViaLinkController = async (req, res) => {
   const {roomId} = req.params;
   try {
-    console.log(userId)
-    const userAdded = await Room.findByIdAndUpdate(
-      {_id: roomId}, 
+    const roomDetails = await Room.findById({_id: roomId});
+    // const userAdded = await Room.findByIdAndUpdate(
+    //   {_id: roomId}, 
+    //   {
+    //     $addToSet: {
+    //       users: {
+    //         _id: req.user,
+    //       }
+    //     }
+    //   }
+    // );
+    const userAdded = await findAndAdd(
       {
-        $addToSet: {
-          users: {
-            _id: req.user,
-          }
-        }
+        userId: req.user, 
+        roomId: req.params.roomId, 
+        createdAt: roomDetails.createdAt
       }
     );
     console.log(userAdded)
