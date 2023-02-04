@@ -11,7 +11,11 @@ const CollegeSchema = new mongoose.Schema(
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Room",
             } 
-        ]
+        ],
+        domainExtension: {
+            type: String,
+            required: true,
+        }
     }
 );
 module.exports = College = mongoose.Schema("College", CollegeSchema);
