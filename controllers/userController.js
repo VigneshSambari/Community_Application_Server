@@ -11,13 +11,13 @@ const nodemailer = require("nodemailer");
 const {v4: uuidv4} = require("uuid");
 
 //Mongodb user model
-const User = require("../models/User");
+const User = require("../models/User.model");
 
 //env variables
 require("dotenv").config();
 
 //mongodb user verification model
-const UserVerification = require("../models/UserVerification");
+const UserVerification = require("../models/UserVerification.model");
 
 //nodemailer transporter
 let transporter = nodemailer.createTransport({

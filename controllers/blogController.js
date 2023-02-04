@@ -1,5 +1,5 @@
-const BlogPost = require('../models/BlogPost');
-const BlogComment = require('../models/BlogComment');
+const BlogPost = require('../models/BlogPost.model');
+const BlogComment = require('../models/BlogComment.model');
 const mongoose = require('mongoose');
 const cloudinary = require('../cloudinaryStorage/cloudinaryBlogs');
 

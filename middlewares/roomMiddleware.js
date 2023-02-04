@@ -1,4 +1,4 @@
-const Room = require("../models/Room");
+const Room = require("../models/Room.model");
 
 const roomMiddleware = async (req, res, next) => {
   try {
