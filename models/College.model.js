@@ -10,8 +10,8 @@ const CollegeSchema = new mongoose.Schema(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Room",
-            }
+            } 
         ]
     }
-)
+);
 module.exports = College = mongoose.Schema("College", CollegeSchema);
