@@ -7,7 +7,7 @@ const returnNew = {
     new: true
 }
 
-const  getAllBlogsController = async (req, res) => {
+const  getAllBlogs = async (req, res) => {
     try{
         const allBlogs = await BlogPost.find();
         //console.log("Fetched all blogs");
@@ -22,7 +22,7 @@ const  getAllBlogsController = async (req, res) => {
 }
 
 
-const getOwnBlogsController = async (req, res) => {
+const getOwnBlogs = async (req, res) => {
 
     const userId = req.user;
     //console.log(userId)
@@ -41,7 +41,7 @@ const getOwnBlogsController = async (req, res) => {
 }
 
 
-const createBlogController = async (req,res) => {
+const createBlog = async (req,res) => {
     
     try{
         const {
@@ -78,7 +78,7 @@ const createBlogController = async (req,res) => {
 }
 
 
-const deleteBlogController = async (req,res) => {
+const deleteBlog = async (req,res) => {
 
     const blogId = req.body._id;
     try{
@@ -97,7 +97,7 @@ const deleteBlogController = async (req,res) => {
 }
 
 
-const updateBlogController  = async (req, res) => {
+const updateBlog  = async (req, res) => {
 
     //console.log(req.body);
     const {
@@ -109,8 +109,8 @@ const updateBlogController  = async (req, res) => {
     const blogId = req.body._id;
 
     try{
-        const updatedBlog = await BlogPost.findByIdAndUpdate(
-            blogId,
+        const updatedBlog = await BlogPost.findOneAndUpdate(
+            {blogId},
             {
                 title,
                 body,
@@ -136,7 +136,7 @@ const updateBlogController  = async (req, res) => {
 
 
 
-const addBlogCommentController = async (req, res) => {
+const addBlogComment = async (req, res) => {
 
     const commentedOn = req.body._id;
     const {
@@ -152,8 +152,8 @@ const addBlogCommentController = async (req, res) => {
         });
 
         await newComment.save();
-        const addedComment = await BlogPost.findByIdAndUpdate(
-            commentedOn,
+        const addedComment = await BlogPost.findOneAndUpdate(
+            {commentedOn},
             {
                 $addToSet: {
                     'comments': {
@@ -176,7 +176,7 @@ const addBlogCommentController = async (req, res) => {
 }
 
 //function to delete comment or reply from blog
-const deleteCommentReplyController = async (req, res) => {
+const deleteCommentReply = async (req, res) => {
 
     //if we want to delte comment then commentOrReply = "comment
     //else "reply"
@@ -224,7 +224,7 @@ const deleteCommentReplyController = async (req, res) => {
     }
 }
 
-const replyCommentBlogController = async (req, res) => {
+const replyCommentBlog = async (req, res) => {
     const {reply, repliedBy, repliedOn} = req.body;
     //console.log(reply, repliedBy, repliedOn);
 
@@ -254,7 +254,7 @@ const replyCommentBlogController = async (req, res) => {
     }
 }
 
-const likeOrUnlikeController = async (req, res) => {
+const likeOrUnlike = async (req, res) => {
 
     const {id, choice, commentorpost} = req.params;
 
@@ -297,14 +297,14 @@ const likeOrUnlikeController = async (req, res) => {
 
 
 module.exports = {
-    updateBlogController, 
-    deleteBlogController, 
-    getOwnBlogsController, 
-    getAllBlogsController, 
-    createBlogController,
-    addBlogCommentController,
-    likeOrUnlikeController,
-    deleteCommentReplyController,
-    replyCommentBlogController
+    updateBlog, 
+    deleteBlog, 
+    getOwnBlogs, 
+    getAllBlogs, 
+    createBlog,
+    addBlogComment,
+    likeOrUnlike,
+    deleteCommentReply,
+    replyCommentBlog
     
 }

@@ -3,7 +3,7 @@ const Profile = require("../models/Profile.model");
 const Room = require("../models/Room.model");
 
 // Get all rooms (public) (Get)
-const getRoomsController = async (req, res) => {
+const getRooms = async (req, res) => {
   try {
     const allRooms = await Room.find();
     console.log("success fetching rooms");
@@ -16,7 +16,7 @@ const getRoomsController = async (req, res) => {
 
 
 // Create a room (Private) (Post)
-const createRoomController = async (req, res) => {
+const createRoom = async (req, res) => {
   try {
     const {
       name,
@@ -117,7 +117,7 @@ const findAndRemove = async ({userId, roomId}) => {
 
 
 // Join a room (Private) (post)
-const joinOrLeaveRoomController = async (req, res) => {
+const joinOrLeaveRoom = async (req, res) => {
   const {userId, roomId, joinOrLeave, roomCreatedAt} = req.body;
   try {
     console.log(userId)
@@ -136,7 +136,8 @@ const joinOrLeaveRoomController = async (req, res) => {
   }
 };
 
-const joinViaLinkController = async (req, res) => {
+//join via link route by roomId
+const joinViaLink = async (req, res) => {
   const {roomId} = req.params;
   try {
     const roomDetails = await Room.findById({_id: roomId});
@@ -170,8 +171,8 @@ const joinViaLinkController = async (req, res) => {
 
 
 module.exports = {
-  getRoomsController,
-  createRoomController,
-  joinOrLeaveRoomController,
-  joinViaLinkController
+  getRooms,
+  createRoom,
+  joinOrLeaveRoom,
+  joinViaLink
 };

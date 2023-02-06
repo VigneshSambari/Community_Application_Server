@@ -21,11 +21,11 @@ const PORT = 3000 || process.env.PORT;
 io.on('connection', socket => {
 
     //Set status to online
-
+    socket.on('setOnline', ({}))
 
     //end
 
-    socket.on('enterRoom', ({username, room}) => {
+    socket.on('joinRoom', ({username, room}) => {
 
         const user = userJoin(socket.id, username, room);
 

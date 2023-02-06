@@ -92,9 +92,113 @@ const deleteProfile = async (req, res) => {
     }
 }
 
+//get others profile
+const fetchOtherProfile = async (req, res) => {
+    try{
+        const {profileIdToFetch, userIdOfRequest} = req.body;
+        const isFriend = await Profile.findOne({
+            $and: [
+                {_id: profileIdToFetch},
+                {
+                    connections: {
+                        $elemMatch: {
+                            _id: userIdOfRequest
+                        }
+                    }
+                }
+            ]
+        })
+        console.log(isFriend);
+        if(isFriend){
+            //return res.json({"_message": "File exists!"})
+        }
+        return res.json(isFriend);
+    }
+    catch(err){
+        console.log(err)
+        return res.json(err);
+    }
+}
+
+//send connection request
+const sendConnectionRequest = async (req, res) => {
+    try{
+        const {senderUserId, recepientProfileId} = req.body;
+        const sentRequest = await Profile.findOneAndUpdate(
+            {_id: recepientProfileId},
+            {
+                $addToSet: {
+                    connectionRequests: {
+                        _id: senderUserId
+                    }
+                }
+            },
+            returnNew
+        )
+        return res.json(sentRequest);
+    }
+    catch(err){
+        return res.json(err);
+    }
+}
+
+//accept connection request
+const acceptConnectionRequest = async (req, res) => {
+    try{
+        const {senderUserId, recepientProfileId} = req.body;
+        const removed = await Profile.findOneAndUpdate(
+            {_id: recepientProfileId},
+            {
+                $pull: {
+                    connectionRequests: {
+                        _id: senderUserId
+                    }
+                },
+                $addToSet: {
+                    connections: {
+                        _id: senderUserId
+                    }
+                },
+            },
+            returnNew
+        )
+        return res.json(removed);
+    }
+    catch(err){
+        return res.json(err);
+    }
+}
+
+
+//disconnect from user
+const disconnectUser = async (req, res) => {
+    try{
+        const {profileId, disconnectUserId} = req.body;
+        const disconnected = await Profile.findOneAndUpdate(
+            {_id: profileId},
+            {
+                $pull: {
+                    connections: {
+                        _id: disconnectUserId
+                    }
+                },
+            },
+            returnNew
+        )
+        return res.json(disconnected);
+    }
+    catch(err){
+        return res.json(err);
+    }
+}
+
 module.exports = {
     createProfile,
     fetchProfile,
     updateProfile,
-    deleteProfile
+    deleteProfile,
+    fetchOtherProfile,
+    sendConnectionRequest,
+    acceptConnectionRequest,
+    disconnectUser,
 }

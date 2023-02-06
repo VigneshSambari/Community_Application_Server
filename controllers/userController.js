@@ -145,8 +145,8 @@ const sendVerificationMail = async (req, res) => {
 }
 
 
-//Controller to verify mail 
-const emailVerificationController = async (req,res) => {
+// to verify mail 
+const emailVerification = async (req,res) => {
     let { email, uniqueString } = req.params
     //console.log(email, uniqueString)
     try{
@@ -209,15 +209,15 @@ const emailVerificationController = async (req,res) => {
 }
 
 
-//Controller to show html after verification
-const verifiedEmailController = async (req,res) =>{
+// to show html after verification
+const verifiedEmail = async (req,res) =>{
     res.sendFile(path.join(__dirname,"../views/verified.html"));
 }
 
 
 
-//SignUp Controller -> Google Auth and Signin by Email
-const signupController = async (req, res) => {
+//SignUp  -> Google Auth and Signin by Email
+const signup = async (req, res) => {
     if (req.body.googleAccessToken) {
         const {googleAccessToken} = req.body;
 
@@ -289,8 +289,8 @@ const signupController = async (req, res) => {
 
 
 
-//SignIn controller using Google Auth and email
-const signinController = async (req, res) => {
+//SignIn  using Google Auth and email
+const signin = async (req, res) => {
     if(req.body.googleAccessToken){
 
         const {googleAccessToken} = req.body;
@@ -362,7 +362,7 @@ const signinController = async (req, res) => {
 
 
 //change password
-const changePasswordController = async (req,res) => {
+const changePassword = async (req,res) => {
     const {email, newPassword, oldPassword} = req.body;
 
         if (email === "") 
@@ -400,10 +400,10 @@ const changePasswordController = async (req,res) => {
 
 
 module.exports = {
-    signinController,
-    signupController,
-    changePasswordController,
+    signin,
+    signup,
+    changePassword,
     sendVerificationMail,
-    verifiedEmailController,
-    emailVerificationController
+    verifiedEmail,
+    emailVerification
 }
