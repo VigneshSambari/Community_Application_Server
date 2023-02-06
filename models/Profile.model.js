@@ -3,9 +3,10 @@ const mongoose = require("mongoose");
 const ProfileSchema = new mongoose.Schema(
   {
     // email , username, password,rooms[],college,branch,date of creation,professor
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
     userName: {
       type: String,
@@ -46,7 +47,30 @@ const ProfileSchema = new mongoose.Schema(
     lastseen: {
       type: Date,
       default: Date.now(),
-    }
+    },
+    connections: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        }
+      }
+    ],
+    connectionRequests: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        }
+      }
+    ],
+    links: [
+      {
+        _id: {
+          type: String,
+        }
+      }
+    ]
   },
   { timestamps: true }
 );

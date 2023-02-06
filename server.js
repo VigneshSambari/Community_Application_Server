@@ -3,6 +3,7 @@ const connectDB = require("./database/db");
 const userRoutes = require("./routes/userRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const blogRoutes = require("./routes/blogRoutes");
+const ProfileRoutes = require("./routes/profileRoutes");
 
 const cors = require("cors");
 
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/auth", userRoutes);
 app.use("/room", roomRoutes);
-
+app.use("/profile", ProfileRoutes);
 app.use("/blog", blogRoutes);
 
 

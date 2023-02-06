@@ -66,7 +66,7 @@ const findAndAdd = async ({userId, roomId, roomCreatedAt}) => {
     );
 
     await Profile.findByIdAndUpdate(
-      {user: userId},
+      {userId},
       {
         $addToSet: {
           rooms: {
@@ -99,7 +99,7 @@ const findAndRemove = async ({userId, roomId}) => {
     );
 
     await Profile.findByIdAndUpdate(
-      {user: userId},
+      {userId},
       {
         $pull: {
            rooms: {
@@ -128,7 +128,7 @@ const joinOrLeaveRoomController = async (req, res) => {
 
     console.log("success joining/leaving rooms");
     return res.json({
-      "message": "Successfully joined/left room"
+      "_message": "Successfully joined/left room"
     });
   } catch (err) {
     res.send("internal server Error in joining rooms").status(500);
@@ -160,7 +160,7 @@ const joinViaLinkController = async (req, res) => {
     console.log(userAdded)
     console.log("success joining/leaving rooms");
     return res.json({
-      "message": "Successfully joined/left room"
+      "_message": "Successfully joined/left room"
     });
   } catch (err) {
     res.send("internal server Error in joining rooms").status(500);

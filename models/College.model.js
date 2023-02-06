@@ -8,10 +8,24 @@ const CollegeSchema = new mongoose.Schema(
         },
         rooms: [
             {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Room",
-            } 
-        ]
+                name: {
+                    type: String,
+                    required: true,
+                },
+                specificRooms: [
+                    {
+                        _id: {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: "room"
+                        }
+                    }
+                ]
+            }
+        ],
+        domainEmail: {
+            type: String,
+            required: true,
+        }
     }
 );
 module.exports = College = mongoose.Schema("College", CollegeSchema);

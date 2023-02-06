@@ -3,6 +3,9 @@ const BlogComment = require('../models/BlogComment.model');
 const mongoose = require('mongoose');
 const cloudinary = require('../cloudinaryStorage/cloudinaryBlogs');
 
+const returnNew = {
+    new: true
+}
 
 const  getAllBlogsController = async (req, res) => {
     try{
@@ -13,7 +16,7 @@ const  getAllBlogsController = async (req, res) => {
     catch(err){
         //console.log("Error in fetching all blogs");
         return res.json({
-            "message": "Internal server error in fetching all blogs!"
+            "_message": "Internal server error in fetching all blogs!"
         });
     }
 }
@@ -32,7 +35,7 @@ const getOwnBlogsController = async (req, res) => {
     catch(err){
         //console.log("Error in fetchin user own blogs");
         return res.json({
-            "message": "Internal Server error in fetching own user blogs"
+            "_message": "Internal Server error in fetching own user blogs"
         });
     }
 }
@@ -69,7 +72,7 @@ const createBlogController = async (req,res) => {
         //console.log("Error in saving blogpost");
         //console.log(err);
         return res.json({
-                "message" :" Internal server error in creating blog post!",
+                "_message" :" Internal server error in creating blog post!",
             });
     }
 }
@@ -87,7 +90,7 @@ const deleteBlogController = async (req,res) => {
         //console.log('Error in deleting blog');
         //console.log(err);
         return res.json({
-            "message": "Internal server error in deleting blog!"
+            "_message": "Internal server error in deleting blog!"
         });
         
     }
@@ -112,7 +115,8 @@ const updateBlogController  = async (req, res) => {
                 title,
                 body,
                 coverMedia
-            }
+            },
+            returnNew
         )
 
         if(title) updatedBlog.title = title;
@@ -125,7 +129,7 @@ const updateBlogController  = async (req, res) => {
     catch(err){
         //console.log("Error in updating blog!");
         return res.json({
-            "message": "Internal server error in updating blog"
+            "_message": "Internal server error in updating blog"
         })
     }
 }
@@ -156,7 +160,8 @@ const addBlogCommentController = async (req, res) => {
                         _id: newComment._id
                     },
                 }
-            }
+            },
+            returnNew
         );
         //console.log(addedComment)
         addedComment.comments.push({_id: newComment._id});
@@ -195,7 +200,8 @@ const deleteCommentReplyController = async (req, res) => {
                             _id: replyOrCommentId
                         }
                     }
-                }
+                },
+                returnNew
             ):
             await BlogComment.findByIdAndUpdate(
                 {_id: commentOrBlogId},
@@ -205,7 +211,8 @@ const deleteCommentReplyController = async (req, res) => {
                             _id: replyOrCommentId
                         }
                     }
-                }
+                },
+                returnNew
             );
         //console.log("deleted comment or reply from blogpost");
         return res.json(deletedCommentOrReply);
@@ -231,7 +238,8 @@ const replyCommentBlogController = async (req, res) => {
                         repliedBy
                     }
                 }
-            }
+            },
+            returnNew
         )
 
         addedReply.replies.push({reply, repliedBy});
@@ -261,14 +269,14 @@ const likeOrUnlikeController = async (req, res) => {
         else if (choice === "dislike"){
             if(comment.likes === 0){
                 return res.json({
-                    "message": "Cannot unlike as likes are 0!"
+                    "_message": "Cannot unlike as likes are 0!"
                 })
             }
             comment.likes = comment.likes - 1;
         }
         else{
             return res.json({
-                "message": "Invalid get request!"
+                "_message": "Invalid get request!"
             });
         }
 
