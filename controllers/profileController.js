@@ -1,5 +1,4 @@
 const Profile = require('../models/Profile.model');
-const mongoose = require("mongoose");
 
 const returnNew = {
     new: true

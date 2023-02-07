@@ -3,7 +3,8 @@ const connectDB = require("./database/db");
 const userRoutes = require("./routes/userRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const blogRoutes = require("./routes/blogRoutes");
-const ProfileRoutes = require("./routes/profileRoutes");
+const profileRoutes = require("./routes/profileRoutes");
+const messageRoutes = require("./routes/messageRoutes")
 
 const cors = require("cors");
 
@@ -12,8 +13,9 @@ app.use(cors());
 app.use(express.json());
 app.use("/auth", userRoutes);
 app.use("/room", roomRoutes);
-app.use("/profile", ProfileRoutes);
+app.use("/profile", profileRoutes);
 app.use("/blog", blogRoutes);
+app.use("/message", messageRoutes);
 
 
 

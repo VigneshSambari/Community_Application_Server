@@ -18,10 +18,14 @@ const botName = "bot";
 
 const PORT = 3000 || process.env.PORT;
 
+
+
 io.on('connection', socket => {
 
     //Set status to online
-    socket.on('setOnline', ({}))
+    socket.on('setOnline', ({profileId}) => {
+
+    })
 
     //end
 
@@ -51,4 +55,4 @@ io.on('connection', socket => {
 })
 
 
-server.listen(PORT, () => console.log(`Listenign to socket server port ${PORT}`));
+server.listen(PORT, () => console.log(`Listening to socket server port ${PORT}`));
