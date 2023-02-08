@@ -1,4 +1,5 @@
 const Profile = require('../models/Profile.model');
+const moment = require('moment');
 
 const returnNew = {
     new: true
@@ -60,12 +61,12 @@ const fetchProfile = async (req, res) => {
 }
 
 
-//update profile by profileId
+//update profile by userId
 const updateProfile = async (req, res) => {
     try{
         const updateData = req.body;
         const finalData = await Profile.findOneAndUpdate(
-            {_id: updateData._id},
+            {userId: updateData.userId},
             updateData,
             returnNew,
         )
@@ -77,11 +78,11 @@ const updateProfile = async (req, res) => {
     }
 }
 
-//delete profile by profileId
+//delete profile by userId
 const deleteProfile = async (req, res) => {
     try{
-        const {profileId} = req.params;
-        const deletedData = await Profile.findOneAndDelete({_id: profileId});
+        const {userId} = req.params;
+        const deletedData = await Profile.findOneAndDelete({userId});
         console.log(deletedData);
         return res.json(deletedData);
     }
@@ -94,10 +95,10 @@ const deleteProfile = async (req, res) => {
 //get others profile
 const fetchOtherProfile = async (req, res) => {
     try{
-        const {profileIdToFetch, userIdOfRequest} = req.body;
+        const {userIdToFetch, userIdOfRequest} = req.body;
         const isFriend = await Profile.findOne({
             $and: [
-                {_id: profileIdToFetch},
+                {_id: userIdToFetch},
                 {
                     connections: {
                         $elemMatch: {
@@ -122,9 +123,9 @@ const fetchOtherProfile = async (req, res) => {
 //send connection request
 const sendConnectionRequest = async (req, res) => {
     try{
-        const {senderUserId, recepientProfileId} = req.body;
+        const {senderUserId, recepientUserId} = req.body;
         const sentRequest = await Profile.findOneAndUpdate(
-            {_id: recepientProfileId},
+            {userId: recepientUserId},
             {
                 $addToSet: {
                     connectionRequests: {
@@ -144,9 +145,9 @@ const sendConnectionRequest = async (req, res) => {
 //accept connection request
 const acceptConnectionRequest = async (req, res) => {
     try{
-        const {senderUserId, recepientProfileId} = req.body;
+        const {senderUserId, recepientUserId} = req.body;
         const removed = await Profile.findOneAndUpdate(
-            {_id: recepientProfileId},
+            {userId: recepientUserId},
             {
                 $pull: {
                     connectionRequests: {
@@ -172,9 +173,9 @@ const acceptConnectionRequest = async (req, res) => {
 //disconnect from user
 const disconnectUser = async (req, res) => {
     try{
-        const {profileId, disconnectUserId} = req.body;
+        const {userId, disconnectUserId} = req.body;
         const disconnected = await Profile.findOneAndUpdate(
-            {_id: profileId},
+            {userId},
             {
                 $pull: {
                     connections: {
@@ -191,6 +192,46 @@ const disconnectUser = async (req, res) => {
     }
 }
 
+
+//to set the user status to online
+const setStatusOnline = async (req, res) => {
+    try{
+        const {userId} = req.params;
+        const setOnline = await Profile.findByIdAndUpdate(
+            {userId},
+            {
+                online: true
+            },
+            returnNew
+        )
+        res.json(setOnline);
+    }
+    catch(err){
+        console.log(err);
+        res.json(err);
+    }
+}
+
+//to set the user status to offline and lastseen
+const setsOfflineLastseen = async (req, res) => {
+    try{
+        const {userId} = req.params;
+        const setOnline = await Profile.findByIdAndUpdate(
+            {userId},
+            {
+                online: false,
+                lastseen: Date()
+            },
+            returnNew
+        )
+        res.json(setOnline);
+    }
+    catch(err){
+        console.log(err);
+        res.json(err);
+    }
+}
+
 module.exports = {
     createProfile,
     fetchProfile,
@@ -200,4 +241,6 @@ module.exports = {
     sendConnectionRequest,
     acceptConnectionRequest,
     disconnectUser,
+    setStatusOnline,
+    setsOfflineLastseen
 }

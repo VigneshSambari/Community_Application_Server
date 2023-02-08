@@ -47,7 +47,7 @@ const ProfileSchema = new mongoose.Schema(
     },
     lastseen: {
       type: Date,
-      default: Date.now(),
+      default: Date(),
     },
     connections: [
       {

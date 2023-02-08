@@ -1,12 +1,17 @@
 const express = require('express');
 const {
-    setStatusOnline,
-    setsOfflineLastseen
-} = require("../controllers/messageController");
+    createMessage, 
+    deleteMessage,
+    replyMessage,
+    deleteReply
+} = require('../controllers/messageController');
 
 const router = express.Router();
 
-router.get("/setonline", setStatusOnline);
-router.get("/setoffline", setsOfflineLastseen);
+router.get("/delete/:messageId", deleteMessage)
+router.post("/create", createMessage);
+router.post("/reply", replyMessage);
+router.post("/deletereply", deleteReply);
+
 
 module.exports = router;

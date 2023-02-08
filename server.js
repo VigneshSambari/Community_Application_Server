@@ -5,6 +5,7 @@ const roomRoutes = require("./routes/roomRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const profileRoutes = require("./routes/profileRoutes");
 const messageRoutes = require("./routes/messageRoutes")
+//const {messageURLS} = require('./utils/socket/messageURLS');
 
 const cors = require("cors");
 
@@ -23,8 +24,9 @@ app.use("/message", messageRoutes);
 const PORT = 5000 || process.env.PORT;
 connectDB();
 
-app.get("/", (req, res) => {
-  res.send("hoila");
+app.get("/", async (req, res) => {
+
+  res.json(data);
 });
 
 app.listen(PORT, () => console.log("App is Up and Running ..."));
