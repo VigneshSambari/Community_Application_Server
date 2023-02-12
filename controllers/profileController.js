@@ -1,9 +1,5 @@
 const Profile = require('../models/Profile.model');
-const moment = require('moment');
-
-const returnNew = {
-    new: true
-}
+const {returnNew} = require('../utils/basicFunctions');
 
 //Create profile
 const createProfile = async (req, res) => {
@@ -93,12 +89,15 @@ const deleteProfile = async (req, res) => {
 }
 
 //get others profile
+
+
+//incomplete
 const fetchOtherProfile = async (req, res) => {
     try{
         const {userIdToFetch, userIdOfRequest} = req.body;
         const isFriend = await Profile.findOne({
             $and: [
-                {_id: userIdToFetch},
+                {userId: userIdToFetch},
                 {
                     connections: {
                         $elemMatch: {
@@ -119,6 +118,11 @@ const fetchOtherProfile = async (req, res) => {
         return res.json(err);
     }
 }
+//incomplete
+
+
+
+
 
 //send connection request
 const sendConnectionRequest = async (req, res) => {

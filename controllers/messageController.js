@@ -4,6 +4,7 @@ const requestNew = {
     new: true,
 }
 
+
 //create message from model
 const createMessage = async (req, res) => {
     try{
@@ -21,9 +22,10 @@ const createMessage = async (req, res) => {
             content,
         }
 
-        const messagecreated = new Message(newMessage);
-        await messagecreated.save();
-        return res.json(messagecreated);
+        const messageCreated = new Message(newMessage);
+        const newMsg = await messageCreated.save();
+
+        return res.json(messageCreated);
     }
     catch(err){
         return res.json(err);
@@ -71,13 +73,15 @@ const replyMessage = async (req, res) => {
 //delete reply by messageId and replyId
 const deleteReply = async (req, res) => {
     try{
-        const {messageId, replyId} = req.body;
+        const {messageId, replyIds} = req.body;
         const deletedReply = await Message.findByIdAndUpdate(
             {_id: messageId},
             {
                 $pull: {
                     replies: {
-                        _id: replyId,
+                        _id: {
+                            $in: replyIds,
+                        }
                     }
                 }
             },

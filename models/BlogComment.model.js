@@ -6,8 +6,7 @@ const BlogComment = new mongoose.Schema({
         required: true,
     },
     commentedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User", 
+        type: String, 
     },
     commentedOn: {
         type: mongoose.Schema.Types.ObjectId,
@@ -23,9 +22,7 @@ const BlogComment = new mongoose.Schema({
                 type: String,
             },
             repliedBy: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-                required: true,
+                type: String,
             }
         }
     ],

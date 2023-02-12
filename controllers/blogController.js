@@ -1,10 +1,8 @@
 const BlogPost = require('../models/BlogPost.model');
 const BlogComment = require('../models/BlogComment.model');
 const cloudinary = require('../cloudinaryStorage/cloudinaryBlogs');
-
-const returnNew = {
-    new: true
-}
+const Profile = require('../models/Profile.model');
+const {returnNew} = require('../utils/basicFunctions');
 
 const  getAllBlogs = async (req, res) => {
     try{
@@ -63,7 +61,17 @@ const createBlog = async (req,res) => {
             shares
         }
         const blogPost = new BlogPost(newBlog);
-        await blogPost.save();
+        const created = await blogPost.save();
+        await Profile.findOneAndUpdate(
+            {userId: postedBy},
+            {
+                $push: {
+                    blogs: {
+                        _id: created._id,
+                    }
+                }
+            }
+        )
         //console.log("Succesfully created blogpost");
         return res.json(blogPost);
     }
@@ -79,9 +87,19 @@ const createBlog = async (req,res) => {
 
 const deleteBlog = async (req,res) => {
 
-    const blogId = req.body._id;
+    const {blogIds, userId} = req.body._id;
     try{
         const deletedBlog = await BlogPost.findByIdAndDelete({_id: blogId});
+        await Profile.findOneAndReplace(
+            {userId},
+            {
+                $pull: {
+                    _id: {
+                        $in: blogIds,
+                    }
+                }
+            }
+        )
         //console.log("Successfully deleted blog");
         return res.json(deletedBlog);
     }
@@ -255,12 +273,12 @@ const replyCommentBlog = async (req, res) => {
 
 const likeOrUnlike = async (req, res) => {
 
-    const {id, choice, commentorpost} = req.params;
+    const {_id, choice, commentorpost} = req.params;
 
     try{
         const comment = (commentorpost === "post") ? 
-                await BlogPost.findById(id) : 
-                await BlogComment.findById(id);
+                await BlogPost.findById(_id) : 
+                await BlogComment.findById(_id);
 
         if(choice === "like"){
             comment.likes = comment.likes + 1;

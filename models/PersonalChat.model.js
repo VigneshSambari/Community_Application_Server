@@ -2,35 +2,32 @@ const mongoose = require("mongoose");
 
 const PersonalChatSchema = new mongoose.Schema(
     {
-        user1: {
-            _id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-                required: true,
-            },
-            fetchAfter: {
-                type: Date,
-            }
+        chatId: {
+            type: String,
+            unique: true,
         },
-        user2: {
-            _id: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "User",
-                required: true,
-            },
-            fetchAfter: {
-                type: Date,
-            }
-        },
-        messages: [
+        users: [
             {
                 _id: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: "Message",
-                }
+                    ref: "User",
+                    required: true,
+                    unique: true,
+                },
+                fetchAfter: {
+                    type: Date,
+                },
+                messages: [
+                    {
+                        _id: {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: "Message",
+                        }
+                    }
+                ]
             }
-        ]
+        ],
     }
 );
 
-module.exports = Message = mongoose.model("PersonalChatSchema", PersonalChatSchema);
+module.exports = Message = mongoose.model("PersonalChat", PersonalChatSchema);

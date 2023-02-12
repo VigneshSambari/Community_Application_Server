@@ -4,7 +4,9 @@ const userRoutes = require("./routes/userRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const blogRoutes = require("./routes/blogRoutes");
 const profileRoutes = require("./routes/profileRoutes");
-const messageRoutes = require("./routes/messageRoutes")
+const messageRoutes = require("./routes/messageRoutes");
+const personalChatRoutes = require("./routes/personalChatRoutes");
+
 //const {messageURLS} = require('./utils/socket/messageURLS');
 
 const cors = require("cors");
@@ -17,6 +19,7 @@ app.use("/room", roomRoutes);
 app.use("/profile", profileRoutes);
 app.use("/blog", blogRoutes);
 app.use("/message", messageRoutes);
+app.use("/textuser", personalChatRoutes);
 
 
 

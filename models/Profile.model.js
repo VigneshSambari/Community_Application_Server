@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ProfileSchema = new mongoose.Schema(
   {
-    // email , username, password,rooms[],college,branch,date of creation,professor
+    
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -62,6 +62,14 @@ const ProfileSchema = new mongoose.Schema(
         _id: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "User",
+        }
+      }
+    ],
+    blogs: [
+      {
+        _id:{
+          type:  mongoose.Schema.Types.ObjectId,
+          ref: "BlogPost",
         }
       }
     ],

@@ -1,10 +1,11 @@
 const express = require('express');
 const {
+    deleteMessage, 
     createMessage, 
-    deleteMessage,
     replyMessage,
     deleteReply
 } = require('../controllers/messageController');
+
 
 const router = express.Router();
 
