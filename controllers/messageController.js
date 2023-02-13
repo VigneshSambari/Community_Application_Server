@@ -95,14 +95,7 @@ const deleteReply = async (req, res) => {
 }
 
 
-const sendMessage = async (req, res) => {
-    try{
 
-    }
-    catch(err){
-
-    }
-}
 
 
 module.exports = {
@@ -110,5 +103,4 @@ module.exports = {
     deleteMessage,
     replyMessage,
     deleteReply,
-    sendMessage
 }

@@ -35,7 +35,7 @@ const createProfile = async (req, res) => {
         return res.json(profileCreated);
     }
     catch(err){
-        console.log("Error in creating profile");
+        console.log(err);
         return res.json({
             "_message": "Error in creating profile!",
         })
@@ -89,45 +89,41 @@ const deleteProfile = async (req, res) => {
 }
 
 //get others profile
-
-
-//incomplete
 const fetchOtherProfile = async (req, res) => {
     try{
         const {userIdToFetch, userIdOfRequest} = req.body;
-        const isFriend = await Profile.findOne({
-            $and: [
-                {userId: userIdToFetch},
-                {
-                    connections: {
-                        $elemMatch: {
-                            _id: userIdOfRequest
-                        }
-                    }
-                }
-            ]
-        })
-        console.log(isFriend);
-        if(isFriend){
-            //return res.json({"_message": "File exists!"})
+        const fetchedProfile = await Profile.findOne(
+            {
+                userId: userIdToFetch,
+                "connections._id": userIdOfRequest
+            }
+        )
+        console.log(fetchedProfile);
+        if(fetchedProfile){
+            return res.json(fetchedProfile)
         }
-        return res.json(isFriend);
+        return res.json(
+            {
+                "_message": "Profile is private!",
+            }
+        );
     }
     catch(err){
         console.log(err)
-        return res.json(err);
+        return res.json(
+            {
+                "_message": "Error in fetching profile!",
+            }
+        );
     }
 }
-//incomplete
-
-
-
 
 
 //send connection request
 const sendConnectionRequest = async (req, res) => {
     try{
         const {senderUserId, recepientUserId} = req.body;
+        console.log(req.body)
         const sentRequest = await Profile.findOneAndUpdate(
             {userId: recepientUserId},
             {
@@ -158,6 +154,13 @@ const acceptConnectionRequest = async (req, res) => {
                         _id: senderUserId
                     }
                 },
+            },
+            returnNew
+        )
+        if(!removed) return res.json(removed);
+        const connAdded = await Profile.findOneAndUpdate(
+            {userId: recepientUserId},
+            {
                 $addToSet: {
                     connections: {
                         _id: senderUserId
@@ -166,7 +169,7 @@ const acceptConnectionRequest = async (req, res) => {
             },
             returnNew
         )
-        return res.json(removed);
+        return res.json(connAdded);
     }
     catch(err){
         return res.json(err);

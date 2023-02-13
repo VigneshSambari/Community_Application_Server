@@ -65,6 +65,21 @@ const ProfileSchema = new mongoose.Schema(
         }
       }
     ],
+    requestsSent: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      }
+    ],
+    interests:[
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        }
+      }
+    ],
     blogs: [
       {
         _id:{
