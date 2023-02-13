@@ -5,6 +5,7 @@ const socketio = require('socket.io');
 const cors = require("cors");
 const formatMessage = require('./utils/messages');
 const {userJoin, getCurrentUser} = require('./utils/users');
+const { statusOnlineSetRequest } = require('./utils/socket/axiosReqMethods');
 
 const app = express();
 app.use(cors());
@@ -22,8 +23,14 @@ const PORT = 3000 || process.env.PORT;
 io.on('connection', socket => {
 
     //Set status to online
-    socket.on('setOnline', ({profileId}) => {
-
+    socket.on('setOnline', async ({userId}) => {
+        try{
+            const updatedData = await statusOnlineSetRequest({userId});
+            console.log(updatedData);
+        }
+        catch(err){
+            console.log(err);
+        }
     })
 
     //end

@@ -21,7 +21,8 @@ app.use("/blog", blogRoutes);
 app.use("/message", messageRoutes);
 app.use("/textuser", personalChatRoutes);
 
-
+//Disabling SSL temporarily
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 
 const PORT = 5000 || process.env.PORT;

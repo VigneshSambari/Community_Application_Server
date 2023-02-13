@@ -2,12 +2,12 @@ const axios = require('axios');
 const config = require('config');
 const {
     profileURLS
-} = require('./profileURLS');
+} = require("./axiosReqURLs");
 
-const statusOnlineSetRequest = async ({profileId}) => {
+const statusOnlineSetRequest = async ({userId}) => {
     try{
-        console.log(`${config.get("CurrentURL")}profile/${profileURLS.setOnline}/${profileId}`)
-        const res = await axios.get(`${config.get("CurrentURL")}${profileURLS.setOnline}${profileId}`)
+        console.log(`${config.get("CurrentURL")}profile/${profileURLS.setOnline}/${userId}`)
+        const res = await axios.get(`${config.get("CurrentURL")}${profileURLS.setOnline}${userId}`)
         
         console.log(res.data);
         return res.data
@@ -22,10 +22,10 @@ const statusOnlineSetRequest = async ({profileId}) => {
 }
 
 
-const statusOfflineLastSeen = async ({profileId}) => {
+const statusOfflineLastSeen = async ({userId}) => {
     try{
-        console.log(`${config.get("CurrentURL")}${profileURLS.setOfflineLastSeen}${profileId}`)
-        const res = await axios.get(`${config.get("CurrentURL")}${profileURLS.setOfflineLastSeen}${profileId}`)
+        console.log(`${config.get("CurrentURL")}${profileURLS.setOfflineLastSeen}${userId}`)
+        const res = await axios.get(`${config.get("CurrentURL")}${profileURLS.setOfflineLastSeen}${userId}`)
         console.log(res.data)
         return res.data
     }
