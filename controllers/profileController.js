@@ -88,25 +88,84 @@ const deleteProfile = async (req, res) => {
     }
 }
 
-//get others profile
-const fetchOtherProfile = async (req, res) => {
+
+//check if friend
+const profileOfFriend = async ({userIdToFetch, userIdOfRequest}) => {
     try{
-        const {userIdToFetch, userIdOfRequest} = req.body;
         const fetchedProfile = await Profile.findOne(
             {
                 userId: userIdToFetch,
                 "connections._id": userIdOfRequest
             }
         )
+        return fetchedProfile;
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+
+//check if friend controller
+const checkIfFriend = async (req, res) => {
+    try{
+        const {userIdToFetch, userIdOfRequest} = req.body;
+        const fetchedProfile = await profileOfFriend({userIdToFetch, userIdOfRequest});
+        return res.json(fetchedProfile);
+    }
+    catch(err){
+        return res.json(
+            {
+                "_message": "Error in checking if friend!",
+            }
+        )
+    }
+}
+
+
+//function to let users see basic info
+//generally public info like name, profile pic, 
+const fetchPublicInfo = async ({userId}) => {
+    try{
+        const publicInfo = await Profile.findOne(
+            {userId},
+        ).select({userName: 1, avatar: 1});
+        return publicInfo;
+    }
+    catch(err){
+        throw err;
+    }
+}
+
+
+//controller to fetch public profile
+const fetchPublicProfile = async (req, res) => {
+    try{
+        const {userId} = req.params;
+        const publicInfo = await fetchPublicInfo({userId});
+        return res.json(publicInfo);
+    }
+    catch(err){
+        return res.json(
+            {
+                "_message": "Error in fetching public profile!",
+            }
+        )
+    }
+}
+
+
+//get others profile
+const fetchOtherProfile = async (req, res) => {
+    try{
+        const {userIdToFetch, userIdOfRequest} = req.body;
+        const fetchedProfile = await profileOfFriend({userIdToFetch, userIdOfRequest});
         console.log(fetchedProfile);
         if(fetchedProfile){
             return res.json(fetchedProfile)
         }
-        return res.json(
-            {
-                "_message": "Profile is private!",
-            }
-        );
+        const publicProfile = await fetchPublicInfo({userId: userIdToFetch});
+        return res.json(publicProfile);
     }
     catch(err){
         console.log(err)
@@ -117,6 +176,8 @@ const fetchOtherProfile = async (req, res) => {
         );
     }
 }
+
+
 
 
 //send connection request
@@ -204,14 +265,14 @@ const disconnectUser = async (req, res) => {
 const setStatusOnline = async (req, res) => {
     try{
         const {userId} = req.params;
-        const setOnline = await Profile.findByIdAndUpdate(
+        const setOnline = await Profile.findOneAndUpdate(
             {userId},
             {
                 online: true
             },
             returnNew
-        )
-        res.json(setOnline);
+        );
+        return res.json(setOnline);
     }
     catch(err){
         console.log(err);
@@ -223,7 +284,7 @@ const setStatusOnline = async (req, res) => {
 const setsOfflineLastseen = async (req, res) => {
     try{
         const {userId} = req.params;
-        const setOnline = await Profile.findByIdAndUpdate(
+        const setOnline = await Profile.findOneAndUpdate(
             {userId},
             {
                 online: false,
@@ -239,12 +300,16 @@ const setsOfflineLastseen = async (req, res) => {
     }
 }
 
+
+
 module.exports = {
     createProfile,
     fetchProfile,
     updateProfile,
     deleteProfile,
+    checkIfFriend,
     fetchOtherProfile,
+    fetchPublicProfile,
     sendConnectionRequest,
     acceptConnectionRequest,
     disconnectUser,

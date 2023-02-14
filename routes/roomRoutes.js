@@ -3,7 +3,8 @@ const {
   getRooms,
   createRoom,
   joinOrLeaveRoom,
-  joinViaLink
+  joinViaLink,
+  checkIfMember
 } = require("../controllers/roomController")
 
 const {authMiddleware} = require("../middlewares/authMiddleware");
@@ -14,9 +15,11 @@ const router = express.Router();
 
 router.get("", getRooms);
 router.get("/joinViaLink/:roomId", authMiddleware, joinViaLink);
+
 router.post("/create", createRoom);
 router.post("/join", roomMiddleware, joinOrLeaveRoom);
 router.post("/leave", joinOrLeaveRoom);
+router.post("/checkmember", checkIfMember);
 
 
 module.exports = router;

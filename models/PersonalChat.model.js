@@ -22,7 +22,7 @@ const PersonalChatSchema = new mongoose.Schema(
                         _id: {
                             type: mongoose.Schema.Types.ObjectId,
                             ref: "Message",
-                        }
+                        },
                     }
                 ]
             }

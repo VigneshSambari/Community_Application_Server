@@ -1,15 +1,14 @@
 const axios = require('axios');
-const config = require('config');
 const {
-    profileURLS
+    profileURLS,
+    roomURLS
 } = require("./axiosReqURLs");
 
+//set the status of the user to online 
 const statusOnlineSetRequest = async ({userId}) => {
     try{
-        console.log(`${config.get("CurrentURL")}profile/${profileURLS.setOnline}/${userId}`)
-        const res = await axios.get(`${config.get("CurrentURL")}${profileURLS.setOnline}${userId}`)
         
-        console.log(res.data);
+        const res = await axios.get(`${profileURLS.setOnline}${userId}`)
         return res.data
     }
     catch(err){
@@ -21,12 +20,10 @@ const statusOnlineSetRequest = async ({userId}) => {
     }
 }
 
-
+//set the stsus of the user to offline
 const statusOfflineLastSeen = async ({userId}) => {
     try{
-        console.log(`${config.get("CurrentURL")}${profileURLS.setOfflineLastSeen}${userId}`)
-        const res = await axios.get(`${config.get("CurrentURL")}${profileURLS.setOfflineLastSeen}${userId}`)
-        console.log(res.data)
+        const res = await axios.get(`${profileURLS.setOfflineLastSeen}${userId}`)
         return res.data
     }
     catch(err){
@@ -38,7 +35,26 @@ const statusOfflineLastSeen = async ({userId}) => {
 }
 
 
+//check if user belongs to a room
+const checkMemberOfRoom = async ({roomId, userId}) => {
+    try{
+        const res = await axios.post(`${roomURLS.checkIfMemberOfRoom}`,
+            {
+                userId,
+                roomId,
+            }
+        )
+        return res.data;
+    }
+    catch(err){
+        throw {
+            "_message": "Error in checking if member of room!",
+        }
+    }
+}
+
 module.exports = {
     statusOnlineSetRequest,
     statusOfflineLastSeen,
+    checkMemberOfRoom,
 }

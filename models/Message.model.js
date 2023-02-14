@@ -17,7 +17,8 @@ const MessageSchema = new mongoose.Schema(
           type: String,
         },
         repliedBy: {
-          type: String,
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
         },
         time: {
           type: Date,

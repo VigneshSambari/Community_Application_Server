@@ -170,9 +170,36 @@ const joinViaLink = async (req, res) => {
 }
 
 
+//check is a user belongs to the given room
+const checkIfMember = async (req, res) => {
+  try{
+    const {userId, roomId} = req.body;
+    const fetchedRoom = await Room.findOne(
+      {
+        _id: roomId,
+        $or: [
+          {"users._id": userId},
+          {"admins._id": userId}
+        ]
+      }
+    )
+    return res.json(fetchedRoom);
+  }
+  catch(err){
+    console.log(err);
+    return res.json(
+      {
+        "message": "Error in checking if memeber of room!",
+      }
+    )
+  }
+}
+
+
 module.exports = {
   getRooms,
   createRoom,
+  checkIfMember,
   joinOrLeaveRoom,
   joinViaLink
 };
