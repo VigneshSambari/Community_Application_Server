@@ -57,6 +57,7 @@ const RoomSchema = new mongoose.Schema(
     ],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "Room",
       required: true,
     },
     tags: [

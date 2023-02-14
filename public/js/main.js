@@ -8,10 +8,19 @@ const { username, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
-const socket = io();
+const socket =io.connect('http://localhost:3000', {
+  query: {
+    userId: "63df5afd61cf376cb318c141",
+    userName: 'Vicky'
+  }
+});
+
+//change status
+socket.emit('setOnline', {});
 
 // Join chatroom
-socket.emit('joinRoom', { username, room });
+//socket.emit('joinRoom', { username, room });
+socket.emit('enterRoom', { roomId:"63e104f6e291f1dc9ef7a5d3" });
 
 // Get room and users
 socket.on('roomUsers', ({ room, users }) => {
@@ -21,8 +30,9 @@ socket.on('roomUsers', ({ room, users }) => {
 
 // Message from server
 socket.on('message', (message) => {
+  console.log("Trigerred")
   console.log(message);
-  outputMessage(message);
+  //outputMessage(message);
 
   // Scroll down
   chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -33,16 +43,29 @@ chatForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
   // Get message text
-  let msg = e.target.elements.msg.value;
+ // let msg = e.target.elements.msg.value;
 
-  msg = msg.trim();
+  //msg = msg.trim();
+
+  let msg = {
+    "type": "text",
+    "content": "New message2 !",
+    "sentBy": "63df5afd61cf376cb318c141",
+    "sentTo": "63e0ef189acc26c31313dd90",
+    "_id": "63ebc930c5ac3a5941e21bee",
+    "replies": [],
+    "createdAt": "2023-02-14T17:47:28.582Z",
+    "updatedAt": "2023-02-14T17:47:28.582Z",
+    "__v": 0
+}
 
   if (!msg) {
     return false;
   }
 
+  //console.log(msg);
   // Emit message to server
-  socket.emit('chatMessage', msg);
+  socket.emit('chatMessage', {message: msg, roomId:"63e104f6e291f1dc9ef7a5d3"});
 
   // Clear input
   e.target.elements.msg.value = '';

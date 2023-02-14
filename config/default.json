@@ -4,6 +4,7 @@
     "AdminEmail": "communityapplication01@gmail.com",
     "AdminPassword": "mrlxaktfglnjxqeh",
     "CurrentURL": "http://localhost:5000/",
+    "CurrentSocketURL": "https://localhost:3000/",
     "CloudinaryCloudNameForBlogs": "drx5qtqvh",
     "CloudinaryAPIKeyForBlogs": "568152115995166",
     "CloudinaryAPISecretForBlogs": "gtfGmJr53_blomwqczsS7O2DWmU"

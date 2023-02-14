@@ -69,7 +69,7 @@ const sendVerificationMail = async (req, res) => {
 
     if(userExists.length > 0){
         return res.status(401).json({
-            "message": "User with provided email already exists"
+            "_message": "User with provided email already exists"
         })
     }
     
@@ -89,12 +89,12 @@ const sendVerificationMail = async (req, res) => {
                 await UserVerification.deleteOne({email});
             }
             catch(err){
-                res.json(400).json({"message": "Error in deleteing previous verification link credentials"})
+                res.json(400).json({"_message": "Error in deleteing previous verification link credentials"})
             }
         }
         else{
             return res.status(400).json({
-                message: "Verification link already sent!"
+                "_message": "Verification link already sent!"
             })
         }   
     }
@@ -131,29 +131,29 @@ const sendVerificationMail = async (req, res) => {
         await transporter.sendMail(mailOptions);
         res.json({
             status: "PENDING",
-            message: "Verification email sent..."
+            "_message": "Verification email sent..."
         })
     }
     catch(err){
         console.log(err);
         res.json({
             status: "FAILED",
-            message: "Email verification failed",
+            "_message": "Email verification failed",
         });
     }
      
 }
 
 
-//Controller to verify mail 
-const emailVerificationController = async (req,res) => {
+// to verify mail 
+const emailVerification = async (req,res) => {
     let { email, uniqueString } = req.params
     //console.log(email, uniqueString)
     try{
         const result = await UserVerification.find({email})
 
         if(result.length==0){
-            return res.status(404).json({"message": "Verification details not found!"})
+            return res.status(404).json({"_message": "Verification details not found!"})
         }
 
         const hashedUniqueString = result[0].uniqueString
@@ -165,7 +165,7 @@ const emailVerificationController = async (req,res) => {
             if(expiresAt < Date.now()){
                 try{
                     await UserVerification.deleteOne({email});
-                    res.status(400).json({"message": "Verification link expired!"})
+                    res.status(400).json({"_message": "Verification link expired!"})
                 }
                 catch(err){
                     let message = "An error occured while clearfing user verification record";
@@ -209,15 +209,15 @@ const emailVerificationController = async (req,res) => {
 }
 
 
-//Controller to show html after verification
-const verifiedEmailController = async (req,res) =>{
+// to show html after verification
+const verifiedEmail = async (req,res) =>{
     res.sendFile(path.join(__dirname,"../views/verified.html"));
 }
 
 
 
-//SignUp Controller -> Google Auth and Signin by Email
-const signupController = async (req, res) => {
+//SignUp  -> Google Auth and Signin by Email
+const signup = async (req, res) => {
     if (req.body.googleAccessToken) {
         const {googleAccessToken} = req.body;
 
@@ -236,7 +236,7 @@ const signupController = async (req, res) => {
                 const existingUser = await User.findOne({email})
 
                 if (existingUser) 
-                    return res.status(400).json({message: "User already exist!"})
+                    return res.status(400).json({"_message": "User already exist!"})
 
                 const result = await User.create({verified:"true",email, firstName, lastName, profilePicture: picture})
 
@@ -251,7 +251,7 @@ const signupController = async (req, res) => {
             .catch(err => {
                 console.log("Inside signp google auth ");
                 console.log(err);
-                return res.status(400).json({message: "Invalid access token!"})
+                return res.status(400).json({"_message": "Invalid access token!"})
             })
 
     } else {
@@ -265,7 +265,7 @@ const signupController = async (req, res) => {
             const existingUser = await User.findOne({email})
 
             if (existingUser) 
-                return res.status(400).json({message: "User already exist!"})
+                return res.status(400).json({"_message": "User already exist!"})
 
            
             const hashedPassword = await generateEncryptedPassword(password);
@@ -281,7 +281,7 @@ const signupController = async (req, res) => {
         } catch (err) {
             console.log("Inside signup email and password ");
             console.log(err);
-            return res.status(500).json({message: "Something went wrong!"})
+            return res.status(500).json({"_message": "Something went wrong!"})
         }
 
     }
@@ -289,8 +289,8 @@ const signupController = async (req, res) => {
 
 
 
-//SignIn controller using Google Auth and email
-const signinController = async (req, res) => {
+//SignIn  using Google Auth and email
+const signin = async (req, res) => {
     if(req.body.googleAccessToken){
 
         const {googleAccessToken} = req.body;
@@ -310,7 +310,7 @@ const signinController = async (req, res) => {
                 const existingUser = await User.findOne({email})
 
                 if (!existingUser) 
-                return res.status(404).json({message: "User don't exist!"})
+                return res.status(404).json({"_message": "User don't exist!"})
 
                 const token = generateToken({id: existingUser._id})
                 
@@ -324,24 +324,24 @@ const signinController = async (req, res) => {
             .catch((err) => {
                 console.log("Inside signin google auth ");
                 console.log(err);
-                return res.status(400).json({message: "Invalid access token!"})
+                return res.status(400).json({"_message": "Invalid access token!"})
             })
     }
     else{
         const {email, password} = req.body;
 
         if (email === "" || password === "") 
-            return res.status(400).json({message: "Invalid field!"});
+            return res.status(400).json({"_message": "Invalid field!"});
         try {
             const existingUser = await User.findOne({email})
     
             if (!existingUser) 
-                return res.status(404).json({message: "User doesn't exist!"})
+                return res.status(404).json({"_message": "User doesn't exist!"})
     
             const isPasswordOk = await bcrypt.compare(password, existingUser.password);
     
             if (!isPasswordOk) 
-                return res.status(400).json({message: "Invalid credintials!"})
+                return res.status(400).json({"_message": "Invalid credintials!"})
     
             const token = generateToken({id: existingUser._id})
             
@@ -354,7 +354,7 @@ const signinController = async (req, res) => {
         } catch (err) {
             console.log("Inside signin email and password ");
             console.log(err);
-            return res.status(500).json({message: "Something went wrong!"})
+            return res.status(500).json({"_message": "Something went wrong!"})
         }
     }
   
@@ -362,21 +362,21 @@ const signinController = async (req, res) => {
 
 
 //change password
-const changePasswordController = async (req,res) => {
+const changePassword = async (req,res) => {
     const {email, newPassword, oldPassword} = req.body;
 
         if (email === "") 
-            return res.status(400).json({message: "Email fiels is empty"});
+            return res.status(400).json({"_message": "Email fiels is empty"});
         try {
             const existingUser = await User.findOne({email})
     
             if (!existingUser) 
-                return res.status(404).json({message: "User doesn't exist!"})
+                return res.status(404).json({"_message": "User doesn't exist!"})
     
             const isPasswordOk = await bcrypt.compare(oldPassword, existingUser.password);
             
              if (!isPasswordOk) 
-                 return res.status(400).json({message: "Invalid credintials!"})
+                 return res.status(400).json({"_message": "Invalid credintials!"})
     
             
             const hashedPassword = await generateEncryptedPassword(newPassword);
@@ -388,22 +388,22 @@ const changePasswordController = async (req,res) => {
             console.log("Inside signin email and password ");
             console.log(existingUser);
 
-            return res.status(200).json({result: existingUser, message:"Succesfully changed password"})
+            return res.status(200).json({result: existingUser, "_message":"Succesfully changed password"})
 
         } catch (err) {
             console.log("Inside signin email and password ");
             console.log(err);
-            return res.status(500).json({message: "Something went wrong!"})
+            return res.status(500).json({"_message": "Something went wrong!"})
         }
 }
 
 
 
 module.exports = {
-    signinController,
-    signupController,
-    changePasswordController,
+    signin,
+    signup,
+    changePassword,
     sendVerificationMail,
-    verifiedEmailController,
-    emailVerificationController
+    verifiedEmail,
+    emailVerification
 }

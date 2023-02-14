@@ -3,7 +3,7 @@ const Profile = require("../models/Profile.model");
 const Room = require("../models/Room.model");
 
 // Get all rooms (public) (Get)
-const getRoomsController = async (req, res) => {
+const getRooms = async (req, res) => {
   try {
     const allRooms = await Room.find();
     console.log("success fetching rooms");
@@ -16,7 +16,7 @@ const getRoomsController = async (req, res) => {
 
 
 // Create a room (Private) (Post)
-const createRoomController = async (req, res) => {
+const createRoom = async (req, res) => {
   try {
     const {
       name,
@@ -66,7 +66,7 @@ const findAndAdd = async ({userId, roomId, roomCreatedAt}) => {
     );
 
     await Profile.findByIdAndUpdate(
-      {user: userId},
+      {userId},
       {
         $addToSet: {
           rooms: {
@@ -99,7 +99,7 @@ const findAndRemove = async ({userId, roomId}) => {
     );
 
     await Profile.findByIdAndUpdate(
-      {user: userId},
+      {userId},
       {
         $pull: {
            rooms: {
@@ -117,7 +117,7 @@ const findAndRemove = async ({userId, roomId}) => {
 
 
 // Join a room (Private) (post)
-const joinOrLeaveRoomController = async (req, res) => {
+const joinOrLeaveRoom = async (req, res) => {
   const {userId, roomId, joinOrLeave, roomCreatedAt} = req.body;
   try {
     console.log(userId)
@@ -128,7 +128,7 @@ const joinOrLeaveRoomController = async (req, res) => {
 
     console.log("success joining/leaving rooms");
     return res.json({
-      "message": "Successfully joined/left room"
+      "_message": "Successfully joined/left room"
     });
   } catch (err) {
     res.send("internal server Error in joining rooms").status(500);
@@ -136,7 +136,8 @@ const joinOrLeaveRoomController = async (req, res) => {
   }
 };
 
-const joinViaLinkController = async (req, res) => {
+//join via link route by roomId
+const joinViaLink = async (req, res) => {
   const {roomId} = req.params;
   try {
     const roomDetails = await Room.findById({_id: roomId});
@@ -160,7 +161,7 @@ const joinViaLinkController = async (req, res) => {
     console.log(userAdded)
     console.log("success joining/leaving rooms");
     return res.json({
-      "message": "Successfully joined/left room"
+      "_message": "Successfully joined/left room"
     });
   } catch (err) {
     res.send("internal server Error in joining rooms").status(500);
@@ -169,9 +170,36 @@ const joinViaLinkController = async (req, res) => {
 }
 
 
+//check is a user belongs to the given room
+const checkIfMember = async (req, res) => {
+  try{
+    const {userId, roomId} = req.body;
+    const fetchedRoom = await Room.findOne(
+      {
+        _id: roomId,
+        $or: [
+          {"users._id": userId},
+          {"admins._id": userId}
+        ]
+      }
+    )
+    return res.json(fetchedRoom);
+  }
+  catch(err){
+    console.log(err);
+    return res.json(
+      {
+        "message": "Error in checking if memeber of room!",
+      }
+    )
+  }
+}
+
+
 module.exports = {
-  getRoomsController,
-  createRoomController,
-  joinOrLeaveRoomController,
-  joinViaLinkController
+  getRooms,
+  createRoom,
+  checkIfMember,
+  joinOrLeaveRoom,
+  joinViaLink
 };

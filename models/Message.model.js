@@ -15,23 +15,24 @@ const MessageSchema = new mongoose.Schema(
       {
         reply: {
           type: String,
-          default: "", 
         },
+        repliedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        time: {
+          type: Date,
+        }
       }
     ],
-    sendBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+    sentBy: {
+      type: String,
     },
     sentTo: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Room",
     },
-    createdAt: {
-      type: Date,
-      required: true,
-    }
   },
+  {timestamps: true}
 );
 
 module.exports = Message = mongoose.model("Message", MessageSchema);

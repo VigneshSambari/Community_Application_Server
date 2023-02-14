@@ -7,7 +7,7 @@ const BlogComment = new mongoose.Schema({
     },
     commentedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", 
+        ref: "User",
     },
     commentedOn: {
         type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +25,6 @@ const BlogComment = new mongoose.Schema({
             repliedBy: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
-                required: true,
             }
         }
     ],

@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 
 const ProfileSchema = new mongoose.Schema(
   {
-    // email , username, password,rooms[],college,branch,date of creation,professor
-    user: {
+    
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      required: true,
+      unique: true,
     },
     userName: {
       type: String,
@@ -45,8 +47,54 @@ const ProfileSchema = new mongoose.Schema(
     },
     lastseen: {
       type: Date,
-      default: Date.now(),
-    }
+      default: Date(),
+    },
+    connections: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        }
+      }
+    ],
+    connectionRequests: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        }
+      }
+    ],
+    requestsSent: [
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      }
+    ],
+    interests:[
+      {
+        _id: {
+          type: mongoose.Schema.Types.ObjectId,
+        }
+      }
+    ],
+    blogs: [
+      {
+        _id:{
+          type:  mongoose.Schema.Types.ObjectId,
+          ref: "BlogPost",
+        }
+      }
+    ],
+    links: [
+      {
+        _id: {
+          type: String,
+        }
+      }
+    ]
   },
   { timestamps: true }
 );

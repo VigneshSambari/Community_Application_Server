@@ -1,10 +1,10 @@
 const BlogPost = require('../models/BlogPost.model');
 const BlogComment = require('../models/BlogComment.model');
-const mongoose = require('mongoose');
 const cloudinary = require('../cloudinaryStorage/cloudinaryBlogs');
+const Profile = require('../models/Profile.model');
+const {returnNew} = require('../utils/basicFunctions');
 
-
-const  getAllBlogsController = async (req, res) => {
+const  getAllBlogs = async (req, res) => {
     try{
         const allBlogs = await BlogPost.find();
         //console.log("Fetched all blogs");
@@ -13,13 +13,13 @@ const  getAllBlogsController = async (req, res) => {
     catch(err){
         //console.log("Error in fetching all blogs");
         return res.json({
-            "message": "Internal server error in fetching all blogs!"
+            "_message": "Internal server error in fetching all blogs!"
         });
     }
 }
 
 
-const getOwnBlogsController = async (req, res) => {
+const getOwnBlogs = async (req, res) => {
 
     const userId = req.user;
     //console.log(userId)
@@ -32,13 +32,13 @@ const getOwnBlogsController = async (req, res) => {
     catch(err){
         //console.log("Error in fetchin user own blogs");
         return res.json({
-            "message": "Internal Server error in fetching own user blogs"
+            "_message": "Internal Server error in fetching own user blogs"
         });
     }
 }
 
 
-const createBlogController = async (req,res) => {
+const createBlog = async (req,res) => {
     
     try{
         const {
@@ -61,7 +61,17 @@ const createBlogController = async (req,res) => {
             shares
         }
         const blogPost = new BlogPost(newBlog);
-        await blogPost.save();
+        const created = await blogPost.save();
+        await Profile.findOneAndUpdate(
+            {userId: postedBy},
+            {
+                $push: {
+                    blogs: {
+                        _id: created._id,
+                    }
+                }
+            }
+        )
         //console.log("Succesfully created blogpost");
         return res.json(blogPost);
     }
@@ -69,17 +79,27 @@ const createBlogController = async (req,res) => {
         //console.log("Error in saving blogpost");
         //console.log(err);
         return res.json({
-                "message" :" Internal server error in creating blog post!",
+                "_message" :" Internal server error in creating blog post!",
             });
     }
 }
 
 
-const deleteBlogController = async (req,res) => {
+const deleteBlog = async (req,res) => {
 
-    const blogId = req.body._id;
+    const {blogIds, userId} = req.body._id;
     try{
         const deletedBlog = await BlogPost.findByIdAndDelete({_id: blogId});
+        await Profile.findOneAndReplace(
+            {userId},
+            {
+                $pull: {
+                    _id: {
+                        $in: blogIds,
+                    }
+                }
+            }
+        )
         //console.log("Successfully deleted blog");
         return res.json(deletedBlog);
     }
@@ -87,14 +107,14 @@ const deleteBlogController = async (req,res) => {
         //console.log('Error in deleting blog');
         //console.log(err);
         return res.json({
-            "message": "Internal server error in deleting blog!"
+            "_message": "Internal server error in deleting blog!"
         });
         
     }
 }
 
 
-const updateBlogController  = async (req, res) => {
+const updateBlog  = async (req, res) => {
 
     //console.log(req.body);
     const {
@@ -106,13 +126,14 @@ const updateBlogController  = async (req, res) => {
     const blogId = req.body._id;
 
     try{
-        const updatedBlog = await BlogPost.findByIdAndUpdate(
-            blogId,
+        const updatedBlog = await BlogPost.findOneAndUpdate(
+            {blogId},
             {
                 title,
                 body,
                 coverMedia
-            }
+            },
+            returnNew
         )
 
         if(title) updatedBlog.title = title;
@@ -125,14 +146,14 @@ const updateBlogController  = async (req, res) => {
     catch(err){
         //console.log("Error in updating blog!");
         return res.json({
-            "message": "Internal server error in updating blog"
+            "_message": "Internal server error in updating blog"
         })
     }
 }
 
 
 
-const addBlogCommentController = async (req, res) => {
+const addBlogComment = async (req, res) => {
 
     const commentedOn = req.body._id;
     const {
@@ -148,15 +169,16 @@ const addBlogCommentController = async (req, res) => {
         });
 
         await newComment.save();
-        const addedComment = await BlogPost.findByIdAndUpdate(
-            commentedOn,
+        const addedComment = await BlogPost.findOneAndUpdate(
+            {commentedOn},
             {
                 $addToSet: {
                     'comments': {
                         _id: newComment._id
                     },
                 }
-            }
+            },
+            returnNew
         );
         //console.log(addedComment)
         addedComment.comments.push({_id: newComment._id});
@@ -171,7 +193,7 @@ const addBlogCommentController = async (req, res) => {
 }
 
 //function to delete comment or reply from blog
-const deleteCommentReplyController = async (req, res) => {
+const deleteCommentReply = async (req, res) => {
 
     //if we want to delte comment then commentOrReply = "comment
     //else "reply"
@@ -195,7 +217,8 @@ const deleteCommentReplyController = async (req, res) => {
                             _id: replyOrCommentId
                         }
                     }
-                }
+                },
+                returnNew
             ):
             await BlogComment.findByIdAndUpdate(
                 {_id: commentOrBlogId},
@@ -205,7 +228,8 @@ const deleteCommentReplyController = async (req, res) => {
                             _id: replyOrCommentId
                         }
                     }
-                }
+                },
+                returnNew
             );
         //console.log("deleted comment or reply from blogpost");
         return res.json(deletedCommentOrReply);
@@ -217,7 +241,7 @@ const deleteCommentReplyController = async (req, res) => {
     }
 }
 
-const replyCommentBlogController = async (req, res) => {
+const replyCommentBlog = async (req, res) => {
     const {reply, repliedBy, repliedOn} = req.body;
     //console.log(reply, repliedBy, repliedOn);
 
@@ -231,7 +255,8 @@ const replyCommentBlogController = async (req, res) => {
                         repliedBy
                     }
                 }
-            }
+            },
+            returnNew
         )
 
         addedReply.replies.push({reply, repliedBy});
@@ -246,14 +271,14 @@ const replyCommentBlogController = async (req, res) => {
     }
 }
 
-const likeOrUnlikeController = async (req, res) => {
+const likeOrUnlike = async (req, res) => {
 
-    const {id, choice, commentorpost} = req.params;
+    const {_id, choice, commentorpost} = req.params;
 
     try{
         const comment = (commentorpost === "post") ? 
-                await BlogPost.findById(id) : 
-                await BlogComment.findById(id);
+                await BlogPost.findById(_id) : 
+                await BlogComment.findById(_id);
 
         if(choice === "like"){
             comment.likes = comment.likes + 1;
@@ -261,14 +286,14 @@ const likeOrUnlikeController = async (req, res) => {
         else if (choice === "dislike"){
             if(comment.likes === 0){
                 return res.json({
-                    "message": "Cannot unlike as likes are 0!"
+                    "_message": "Cannot unlike as likes are 0!"
                 })
             }
             comment.likes = comment.likes - 1;
         }
         else{
             return res.json({
-                "message": "Invalid get request!"
+                "_message": "Invalid get request!"
             });
         }
 
@@ -289,14 +314,14 @@ const likeOrUnlikeController = async (req, res) => {
 
 
 module.exports = {
-    updateBlogController, 
-    deleteBlogController, 
-    getOwnBlogsController, 
-    getAllBlogsController, 
-    createBlogController,
-    addBlogCommentController,
-    likeOrUnlikeController,
-    deleteCommentReplyController,
-    replyCommentBlogController
+    updateBlog, 
+    deleteBlog, 
+    getOwnBlogs, 
+    getAllBlogs, 
+    createBlog,
+    addBlogComment,
+    likeOrUnlike,
+    deleteCommentReply,
+    replyCommentBlog
     
 }

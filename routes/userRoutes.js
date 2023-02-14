@@ -1,21 +1,21 @@
 const express = require("express")
 
 const {  
-        signinController, 
-        signupController, 
-        changePasswordController, 
+        signin, 
+        signup, 
+        changePassword, 
         sendVerificationMail, 
-        verifiedEmailController, 
-        emailVerificationController
+        verifiedEmail, 
+        emailVerification
     } = require("../controllers/userController")
 
 const router = express.Router()
 
-router.post("/login", signinController)
-router.post("/register", signupController);
-router.get("/verifyemail/:email/:uniqueString", emailVerificationController);
+router.post("/login", signin)
+router.post("/register", signup);
+router.get("/verifyemail/:email/:uniqueString", emailVerification);
 router.post("/verifyemail", sendVerificationMail)
-router.post("/changepassword", changePasswordController)
-router.get("/verified", verifiedEmailController)
+router.post("/changepassword", changePassword)
+router.get("/verified", verifiedEmail)
 
 module.exports = router;

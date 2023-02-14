@@ -3,30 +3,30 @@ const upload = require('../utils/multer');
 const {uploadBlogMedia, deleteBlogMedia} = require('../middlewares/blogMiddleware');
 
 const {
-    updateBlogController, 
-    deleteBlogController, 
-    getOwnBlogsController, 
-    getAllBlogsController, 
-    createBlogController,
-    addBlogCommentController,
-    likeOrUnlikeController,
-    deleteCommentReplyController,
-    replyCommentBlogController
+    updateBlog, 
+    deleteBlog, 
+    getOwnBlogs, 
+    getAllBlogs, 
+    createBlog,
+    addBlogComment,
+    likeOrUnlike,
+    deleteCommentReply,
+    replyCommentBlog
     
 } = require("../controllers/blogController")
 
 const router = express.Router();
 
 
-router.get("/all", getAllBlogsController);
-router.get("/own", getOwnBlogsController);
-router.get("/:commentorpost/:id/:choice", likeOrUnlikeController);
-router.post("/create", upload.array("file"), uploadBlogMedia, createBlogController);
-router.post("/delete", deleteBlogMedia, deleteBlogController);
-router.post("/update", upload.array("file"), deleteBlogMedia, uploadBlogMedia, updateBlogController);
-router.post("/comment", addBlogCommentController);
-router.post("/deletecommentorreply", deleteCommentReplyController);
-router.post("/addreply", replyCommentBlogController);   
+router.get("/all", getAllBlogs);
+router.get("/own", getOwnBlogs);
+router.get("/:commentorpost/:id/:choice", likeOrUnlike);
+router.post("/create", upload.array("file"), uploadBlogMedia, createBlog);
+router.post("/delete", deleteBlogMedia, deleteBlog);
+router.post("/update", upload.array("file"), deleteBlogMedia, uploadBlogMedia, updateBlog);
+router.post("/comment", addBlogComment);
+router.post("/deletecommentorreply", deleteCommentReply);
+router.post("/addreply", replyCommentBlog);   
 
 
 
