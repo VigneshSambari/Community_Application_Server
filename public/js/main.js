@@ -4,7 +4,7 @@ const roomName = document.getElementById('room-name');
 const userList = document.getElementById('users');
 
 // Get username and room from URL
-const { username, room } = Qs.parse(location.search, {
+const { userId, room } = Qs.parse(location.search, {
   ignoreQueryPrefix: true,
 });
 
@@ -16,11 +16,12 @@ const socket =io.connect('http://localhost:3000', {
 });
 
 //change status
-socket.emit('setOnline', {});
+socket.emit('setOnline', {chatId: "63e793833196daef5eea1c93"});
 
 // Join chatroom
 //socket.emit('joinRoom', { username, room });
-socket.emit('enterRoom', { roomId:"63e104f6e291f1dc9ef7a5d3" });
+//socket.emit('enterRoom', { roomId:room });
+socket.emit('startChat', {chatId: "63e793833196daef5eea1c93"})
 
 // Get room and users
 socket.on('roomUsers', ({ room, users }) => {
@@ -65,7 +66,10 @@ chatForm.addEventListener('submit', (e) => {
 
   //console.log(msg);
   // Emit message to server
-  socket.emit('chatMessage', {message: msg, roomId:"63e104f6e291f1dc9ef7a5d3"});
+  //socket.emit('roomMessage', {message: msg, roomId:room});
+
+
+  socket.emit('personalChatMessage', {message, chatId: "63e793833196daef5eea1c93"});
 
   // Clear input
   e.target.elements.msg.value = '';

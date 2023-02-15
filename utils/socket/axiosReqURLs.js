@@ -12,7 +12,12 @@ const roomURLS = {
 }
 
 
+const personalChatURLS = {
+    "checkIfMemberOfChat": `${config.get("CurrentURL")}textuser/checkmember/`,
+}
+
 module.exports = {
     profileURLS,
     roomURLS,
+    personalChatURLS,
 }

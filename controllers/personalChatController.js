@@ -85,8 +85,26 @@ const deleteChat = async (req, res) => {
 }
 
 
+//check if member of chat
+const checkMember = async (req, res) => {
+    try{
+        const {chatId, userId} = req.body;
+        const isMember = await PersonalChat.findOne(
+            {
+                _id: chatId,
+                'users._id': userId
+            }
+        )
+        return res.json(isMember);
+    }
+    catch(err){
+        return res.json(err);
+    }
+}
+
 module.exports = {
     createChat,
     textUser,
     deleteChat,
+    checkMember,
 }

@@ -1,7 +1,8 @@
 const axios = require('axios');
 const {
     profileURLS,
-    roomURLS
+    roomURLS,
+    personalChatURLS
 } = require("./axiosReqURLs");
 
 //set the status of the user to online 
@@ -53,8 +54,27 @@ const checkMemberOfRoom = async ({roomId, userId}) => {
     }
 }
 
+
+//check member of personal chat
+const checkMemberOfChat = async (req, res) => {
+    try{
+        const res = await axios.post(`${personalChatURLS.checkIfMemberOfChat}`,
+            {
+                chatId,
+                userId,
+            }
+        )
+        console.log(res.data)
+        return res.data;
+    }
+    catch(err){
+        return res.json(err);
+    }
+}
+
 module.exports = {
     statusOnlineSetRequest,
     statusOfflineLastSeen,
     checkMemberOfRoom,
+    checkMemberOfChat
 }

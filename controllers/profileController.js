@@ -129,7 +129,7 @@ const fetchPublicInfo = async ({userId}) => {
     try{
         const publicInfo = await Profile.findOne(
             {userId},
-        ).select({userName: 1, avatar: 1});
+        ).select({userName: 1, avatar: 1, online: 1});
         return publicInfo;
     }
     catch(err){

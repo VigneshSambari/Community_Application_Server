@@ -9,6 +9,7 @@ const {
     statusOnlineSetRequest, 
     statusOfflineLastSeen,
     checkMemberOfRoom, 
+    checkMemberOfChat,
 } = require('./utils/socket/axiosReqMethods');
 const { welcomeMessage } = require('./utils/socket/socketFunctions');
 
@@ -38,9 +39,10 @@ io.on('connection', socket => {
             console.log(err);
         }
     })
-  
-    //end
 
+
+    //Join socket of room after validating 
+    //if user exists
     socket.on('enterRoom', async ({roomId}) => {
 
         try{
@@ -48,29 +50,53 @@ io.on('connection', socket => {
             console.log(isMember);
             if(isMember){
                 socket.join(roomId);
-                console.log("Joined socket room")
+                console.log("Joined socket of room")
             }
         }
         catch(err){
             console.log(err);
         }
-        // const user = userJoin(socket.id, username, room);
-
-        // socket.join(user.room);
-
-        // socket.emit('message', formatMessage(botName,"Welcome to chat app"))
-
-        // socket.broadcast.to(user.room).emit('message', formatMessage(botName, `${user.username} has joined the chat`))
     
     })
 
-    socket.on('chatMessage', ({message, roomId}) => {
+
+    //Join socket of personal chat after
+    //validating if user exist
+    socket.on('startChat', async ({chatId}) => {
+        try{
+            const isMember = await checkMemberOfChat({userId: user.userId, chatId});
+            console.log(member);
+            if(isMember){
+                socket.join(chatId);
+                console.log("Joined socket of personal chat")
+            }
+        }
+        catch(err){
+            console.log(err);
+        }
+    })
+
+
+    //Listening to message on particular
+    //personal chatId
+    socket.on('personalChatMessage', async ({message, chatId}) => {
+        console.log(message);
+        console.log(chatId);
+        io.to(chatId).emit('message', message)
+    })
+
+
+    //Listening to message on particular
+    //roomId
+    socket.on('roomMessage', ({message, roomId}) => {
         console.log(message);
         console.log(roomId);
         io.to(roomId).emit('message', message)
     })
 
 
+    //When user disconnects set status to 
+    //offline and lastseen time
     socket.on('disconnect', async() => {
         //Set status to offline and last seen
         const updatedData = statusOfflineLastSeen({userId: user.userId});
